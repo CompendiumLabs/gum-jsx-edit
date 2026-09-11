@@ -4,7 +4,7 @@ import {
   Svg,
   evaluate,
   render_svg,
-} from 'gum-jsx-core'
+} from 'gum-next-core'
 
 const fonts = new Fonts()
 const fontsReady = fonts.load()

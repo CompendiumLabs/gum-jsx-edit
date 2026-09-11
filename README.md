@@ -1,6 +1,6 @@
 # gum-edit
 
-A small two-pane live editor for the in-development `gum-jsx-core` package. JSX is evaluated locally in the browser and rendered directly to SVG.
+A small two-pane live editor for the in-development `gum-next-core` package. JSX is evaluated locally in the browser and rendered directly to SVG.
 
 From the parent workspace:
 
