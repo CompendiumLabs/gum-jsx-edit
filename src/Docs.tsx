@@ -1,4 +1,6 @@
 import { lazy, Suspense, useEffect, useId, useMemo, useRef, useState } from 'react'
+import type { MouseEvent as ReactMouseEvent } from 'react'
+import { marked } from 'marked'
 import examples from 'virtual:gum-docs'
 import type { Example } from './docs-types'
 import type { NavigationProps } from './navigation'
@@ -15,6 +17,10 @@ const categories = [
 ] as const
 const categoryNames = new Map<string, string>(categories)
 const CodeEditor = lazy(() => import('./CodeEditor'))
+const examplesByMarkdownPath = new Map(examples.map(entry => [
+  `/${entry.collection}/text/${entry.name}.md`,
+  entry,
+]))
 
 function message(error: unknown): string {
   if (error instanceof Error) return error.message
@@ -35,7 +41,63 @@ function Figure({ entry, detailed = false }: { entry: Example, detailed?: boolea
     loading={detailed ? 'eager' : 'lazy'} decoding="async" onError={() => setFailed(true)} />
 }
 
-function ExampleDialog({ entry, onClose }: { entry: Example, onClose: () => void }) {
+function MarkdownView({ entry, onSelect, onShowSource }: {
+  entry: Example
+  onSelect: (entry: Example) => void
+  onShowSource: () => void
+}) {
+  const html = useMemo(() => marked.parse(entry.markdown, { async: false }), [entry.markdown])
+
+  function followLink(event: ReactMouseEvent<HTMLElement>) {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey
+      || event.shiftKey || event.altKey) return
+    const link = (event.target as Element).closest('a')
+    const href = link?.getAttribute('href')
+    if (!href || href.startsWith('#')) return
+
+    const url = new URL(href, `https://gum.local/${entry.collection}/text/${entry.name}.md`)
+    if (url.origin !== 'https://gum.local') return
+    const target = examplesByMarkdownPath.get(url.pathname)
+    if (target) {
+      event.preventDefault()
+      onSelect(target)
+      return
+    }
+
+    const source = /^\/(docs|gala)\/code\/([^/]+)\.jsx$/.exec(url.pathname)
+    if (source && source[1] === entry.collection && source[2] === entry.name) {
+      event.preventDefault()
+      onShowSource()
+    }
+  }
+
+  return (
+    <div className="min-h-0 flex-1 overflow-auto px-5 py-6 sm:px-7">
+      <article className="markdown-doc mx-auto max-w-3xl" onClick={followLink}
+        dangerouslySetInnerHTML={{ __html: html }} />
+    </div>
+  )
+}
+
+function ViewTabs({ view, setView }: { view: 'docs' | 'source', setView: (view: 'docs' | 'source') => void }) {
+  return (
+    <div className="flex items-center rounded-sm border border-gray-300 bg-white p-0.5" role="tablist" aria-label="Example content">
+      {(['docs', 'source'] as const).map(value => (
+        <button key={value} type="button" role="tab" aria-selected={view === value}
+          className={`cursor-pointer rounded-[2px] px-2 py-0.5 font-sans text-[11px] capitalize transition-colors ${view === value ? 'bg-gray-800 text-white' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}
+          onClick={() => setView(value)}>
+          {value === 'source' ? 'JSX' : 'Docs'}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function ExampleDialog({ entry, onClose, onSelect }: {
+  entry: Example
+  onClose: () => void
+  onSelect: (entry: Example) => void
+}) {
   const ref = useRef<HTMLDialogElement>(null)
   const backdropStart = useRef(false)
   const titleId = useId()
@@ -43,6 +105,7 @@ function ExampleDialog({ entry, onClose }: { entry: Example, onClose: () => void
   const [svg, setSvg] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [view, setView] = useState<'docs' | 'source'>('docs')
 
   useEffect(() => {
     if (source === entry.code) {
@@ -108,16 +171,20 @@ function ExampleDialog({ entry, onClose }: { entry: Example, onClose: () => void
           <ToolbarButton onClick={onClose} autoFocus>Close</ToolbarButton>
         </header>
         <div className="grid min-h-0 flex-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1">
-          <section className="flex min-h-0 min-w-0 flex-col border-b border-gray-300 md:border-r md:border-b-0" aria-label="Example source">
+          <section className="flex min-h-0 min-w-0 flex-col border-b border-gray-300 md:border-r md:border-b-0" aria-label="Documentation and example source">
             <div className="flex h-10 shrink-0 items-center justify-between border-b border-gray-300 bg-gray-50 px-4 font-mono text-[11px] tracking-[0.02em] text-gray-600">
-              <span className="truncate">{entry.name}.jsx</span>
-              <span className="ml-3 shrink-0 text-gray-500">editable · wraps</span>
+              <span className="truncate">{entry.name}.{view === 'docs' ? 'md' : 'jsx'}</span>
+              <ViewTabs view={view} setView={setView} />
             </div>
-            <div className="min-h-0 flex-1 overflow-hidden">
-              <Suspense fallback={<p className="p-4 text-sm text-gray-500" role="status">Loading source…</p>}>
-                <CodeEditor value={source} onChange={setSource} wrap label={entry.title + ' example source'} />
-              </Suspense>
-            </div>
+            {view === 'docs' ? (
+              <MarkdownView entry={entry} onSelect={onSelect} onShowSource={() => setView('source')} />
+            ) : (
+              <div className="min-h-0 flex-1 overflow-hidden">
+                <Suspense fallback={<p className="p-4 text-sm text-gray-500" role="status">Loading source…</p>}>
+                  <CodeEditor value={source} onChange={setSource} wrap label={entry.title + ' example source'} />
+                </Suspense>
+              </div>
+            )}
           </section>
           <section className="flex min-h-0 min-w-0 flex-col" aria-label="Example figure">
             <div className="flex h-10 shrink-0 items-center justify-between border-b border-gray-300 bg-gray-50 px-4 font-mono text-[11px] tracking-[0.02em] text-gray-600">
@@ -170,7 +237,7 @@ export default function Docs({ onNavigate }: NavigationProps) {
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase()
     return examples.filter(entry => (category === 'all' || entry.category === category)
-      && `${entry.name} ${entry.title} ${categoryNames.get(entry.category) ?? entry.category}`.toLowerCase().includes(query))
+      && `${entry.name} ${entry.title} ${categoryNames.get(entry.category) ?? entry.category} ${entry.markdown}`.toLowerCase().includes(query))
   }, [search, category])
 
   return (
@@ -202,7 +269,7 @@ export default function Docs({ onNavigate }: NavigationProps) {
         </p>
       )}
 
-      {selected && <ExampleDialog entry={selected} onClose={() => setSelected(null)} />}
+      {selected && <ExampleDialog key={selected.id} entry={selected} onClose={() => setSelected(null)} onSelect={setSelected} />}
     </main>
   )
 }

@@ -15,3 +15,116 @@ body,
   height: 100%;
   margin: 0;
 }
+
+.markdown-doc {
+  color: #374151;
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+.markdown-doc > :first-child {
+  margin-top: 0;
+}
+
+.markdown-doc > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-doc h1,
+.markdown-doc h2,
+.markdown-doc h3 {
+  color: #111827;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 1.75em 0 0.65em;
+}
+
+.markdown-doc h1 {
+  font-size: 1.5rem;
+}
+
+.markdown-doc h2 {
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 1.125rem;
+  padding-bottom: 0.35em;
+}
+
+.markdown-doc h3 {
+  font-size: 1rem;
+}
+
+.markdown-doc p,
+.markdown-doc ul,
+.markdown-doc ol,
+.markdown-doc pre,
+.markdown-doc blockquote,
+.markdown-doc table {
+  margin: 0 0 1em;
+}
+
+.markdown-doc ul,
+.markdown-doc ol {
+  padding-left: 1.5rem;
+}
+
+.markdown-doc ul {
+  list-style: disc;
+}
+
+.markdown-doc ol {
+  list-style: decimal;
+}
+
+.markdown-doc li + li {
+  margin-top: 0.25em;
+}
+
+.markdown-doc a {
+  color: #2563eb;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.markdown-doc a:hover {
+  color: #1d4ed8;
+}
+
+.markdown-doc code {
+  border-radius: 0.2rem;
+  background: #f3f4f6;
+  color: #1f2937;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875em;
+  padding: 0.12em 0.3em;
+}
+
+.markdown-doc pre {
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.25rem;
+  background: #f9fafb;
+  padding: 0.875rem 1rem;
+}
+
+.markdown-doc pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.markdown-doc blockquote {
+  border-left: 3px solid #d1d5db;
+  color: #6b7280;
+  padding-left: 1rem;
+}
+
+.markdown-doc table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.markdown-doc th,
+.markdown-doc td {
+  border: 1px solid #d1d5db;
+  padding: 0.4rem 0.55rem;
+  text-align: left;
+}

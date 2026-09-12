@@ -3,7 +3,16 @@ import type { Plugin, ViteDevServer } from 'vite'
 // Relative source imports let Vite's config runner load these TypeScript-only workspace packages
 // for its Node config host. None of these filesystem/layout imports reach the browser.
 import { evaluate, LayoutPass, render_svg } from '../gum-next-core/src/index'
-import { docsDir, galaDir, listDocs, listGala, getDocsCode, getGalaCode } from '../gum-next-docs/src/index'
+import {
+  docsDir,
+  galaDir,
+  listDocs,
+  listGala,
+  getDocsCode,
+  getDocsText,
+  getGalaCode,
+  getGalaText,
+} from '../gum-next-docs/src/index'
 import type { Example } from './src/docs-types'
 
 const moduleId = 'virtual:gum-docs'
@@ -40,8 +49,8 @@ export function docsPlugin(): Plugin {
     load(id) {
       if (id !== resolvedId) return
       const entries = [
-        ...listGala().map(entry => ({ ...entry, category: 'showcase', collection: 'gala', dir: galaDir })),
-        ...listDocs().map(entry => ({ ...entry, category: entry.cat, collection: 'docs', dir: docsDir })),
+        ...listGala().map(entry => ({ ...entry, category: 'showcase', collection: 'gala' as const, dir: galaDir })),
+        ...listDocs().map(entry => ({ ...entry, category: entry.cat, collection: 'docs' as const, dir: docsDir })),
       ]
       const pass = new LayoutPass()
       const nextPreviews = new Map<string, string>()
@@ -51,7 +60,8 @@ export function docsPlugin(): Plugin {
         this.addWatchFile(file)
         this.addWatchFile(join(dir, 'text', name + '.md'))
         const code = collection === 'gala' ? getGalaCode(name) : getDocsCode(name)
-        const example = { id: collection + '/' + name, name, title, category, code }
+        const markdown = collection === 'gala' ? getGalaText(name) : getDocsText(name)
+        const example = { id: collection + '/' + name, name, title, category, collection, markdown, code }
         try {
           // Only trusted, checked-in examples are evaluated. SVG glyph paths make
           // the previews self-contained; the docs page needs no runtime font loading.

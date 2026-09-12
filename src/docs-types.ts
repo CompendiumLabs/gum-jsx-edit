@@ -3,6 +3,8 @@ export type Example = Readonly<{
   name: string
   title: string
   category: string
+  collection: 'docs' | 'gala'
+  markdown: string
   code: string
   image: string | null
   error: string | null

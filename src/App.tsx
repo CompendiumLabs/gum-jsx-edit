@@ -94,9 +94,9 @@ function App({ onNavigate }: NavigationProps) {
         </div>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-rows-2 gap-2 lg:grid-cols-2 lg:grid-rows-1">
+      <div className="grid min-h-0 flex-1 grid-rows-2 gap-2 lg:grid-cols-2 lg:grid-rows-1 mt-2">
         <Pane ariaLabel="JSX editor" leftTitle="editor.jsx" rightTitle="auto-run">
-          <CodeEditor value={source} onChange={setSource} />
+          <CodeEditor value={source} onChange={setSource} wrap={true} />
         </Pane>
 
         <Pane ariaLabel="SVG preview" leftTitle="preview.svg" rightTitle={rightTitle}>
