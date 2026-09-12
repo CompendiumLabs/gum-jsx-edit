@@ -6,20 +6,20 @@ import type { NavigationProps } from './navigation'
 
 const STORAGE_KEY = 'gum-edit:source'
 
-const starter = `<Svg width={px(640)} font_size={px(18)} color="#203746">
+const starter = `<Svg width={px(640)} font_size={px(18)} color={slate}>
   <Box width={1} padding={px(24)} border_width={px(2)}
-    border_color="#317969" background="#ffffff" radius={px(16)}>
+    border_color={blue} background={white} radius={px(16)}>
     <VStack width={1} gap={px(18)}>
-      <Text font_size={px(30)} font_weight={700}>Make something.</Text>
-      <Text line_height={em(1.45)} color="#58717e">
+      <Text font_size={px(30)} font_weight={bold}>Make something.</Text>
+      <Text line_height={em(1.45)} color={slate}>
         Edit this gum JSX and the SVG updates as you type.
       </Text>
       <HStack width={1} gap={px(14)} align="stretch">
         <RoundedRect grow={1} height={px(110)} radius={px(14)}
-          fill="#bce1d4" stroke="none" />
-        <Circle width={px(110)} fill="#ee8f67" stroke="none" />
+          fill={blue} stroke={none} />
+        <Circle width={px(110)} fill={red} stroke={none} />
         <RoundedRect grow={1} height={px(110)} radius={px(14)}
-          fill="#d9d0f0" stroke="none" />
+          fill={green} stroke={none} />
       </HStack>
     </VStack>
   </Box>
