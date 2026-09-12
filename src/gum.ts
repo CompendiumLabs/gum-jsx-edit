@@ -9,10 +9,18 @@ import {
 const fonts = new Fonts()
 const fontsReady = fonts.load()
 
-export async function renderGum(source: string): Promise<string> {
+type RenderOptions = {
+  idPrefix?: string
+  name?: string
+}
+
+export async function renderGum(source: string, {
+  idPrefix = 'gum-edit',
+  name = 'editor.jsx',
+}: RenderOptions = {}): Promise<string> {
   await fontsReady
 
-  let element = evaluate(source, { name: 'editor.jsx' })
+  let element = evaluate(source, { name })
   if (!(element instanceof Svg)) element = new Svg({ children: element })
 
   const pass = new LayoutPass({
@@ -21,6 +29,6 @@ export async function renderGum(source: string): Promise<string> {
   const fragment = pass.layout(element)
 
   return render_svg(fragment, {
-    id_prefix: 'gum-edit',
+    id_prefix: idPrefix,
   })
 }
