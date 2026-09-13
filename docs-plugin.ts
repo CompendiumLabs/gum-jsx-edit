@@ -4,20 +4,20 @@ import type { Plugin, ViteDevServer } from 'vite'
 // for its Node config host. None of these filesystem/layout imports reach the browser.
 import { evaluate, LayoutPass, render_svg } from '../gum-next-core/src/index'
 import {
-  docsDir,
-  galaDir,
-  listDocs,
-  listGala,
-  getDocsCode,
-  getDocsText,
-  getGalaCode,
-  getGalaText,
+  elementsDir,
+  topicsDir,
+  listElements,
+  listTopics,
+  getElementCode,
+  getElementText,
+  getTopicCode,
+  getTopicText,
 } from '../gum-next-docs/src/index'
 import type { Example } from './src/docs-types'
 
 const moduleId = 'virtual:gum-docs'
 const resolvedId = '\0' + moduleId
-const directories = [docsDir, galaDir]
+const directories = [elementsDir, topicsDir]
 
 function isContent(file: string): boolean {
   return directories.some(dir => {
@@ -49,8 +49,10 @@ export function docsPlugin(): Plugin {
     load(id) {
       if (id !== resolvedId) return
       const entries = [
-        ...listGala().map(entry => ({ ...entry, category: 'showcase', collection: 'gala' as const, dir: galaDir })),
-        ...listDocs().map(entry => ({ ...entry, category: entry.cat, collection: 'docs' as const, dir: docsDir })),
+        ...listElements().map(entry => ({ ...entry, category: entry.cat,
+          collection: 'elements' as const, dir: elementsDir })),
+        ...listTopics().map(entry => ({ ...entry, category: entry.cat ?? 'showcase',
+          collection: 'topics' as const, dir: topicsDir })),
       ]
       const pass = new LayoutPass()
       const nextPreviews = new Map<string, string>()
@@ -59,8 +61,8 @@ export function docsPlugin(): Plugin {
         const file = join(dir, 'code', name + '.jsx')
         this.addWatchFile(file)
         this.addWatchFile(join(dir, 'text', name + '.md'))
-        const code = collection === 'gala' ? getGalaCode(name) : getDocsCode(name)
-        const markdown = collection === 'gala' ? getGalaText(name) : getDocsText(name)
+        const code = collection === 'topics' ? getTopicCode(name) : getElementCode(name)
+        const markdown = collection === 'topics' ? getTopicText(name) : getElementText(name)
         const example = { id: collection + '/' + name, name, title, category, collection, markdown, code }
         try {
           // Only trusted, checked-in examples are evaluated. SVG glyph paths make

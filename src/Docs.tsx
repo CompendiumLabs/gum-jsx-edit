@@ -7,13 +7,17 @@ import type { NavigationProps } from './navigation'
 import { Pane, ToolbarButton } from './Utils'
 
 const categories = [
-  ['showcase', 'Showcases'],
   ['core', 'Getting started'],
   ['layout', 'Layout'],
   ['geometry', 'Geometry'],
   ['plotting', 'Plotting'],
   ['text', 'Text'],
   ['api', 'API'],
+  ['showcase', 'Showcases'],
+] as const
+const sections = [
+  ['elements', 'Elements'],
+  ['topics', 'Topics'],
 ] as const
 const categoryNames = new Map<string, string>(categories)
 const CodeEditor = lazy(() => import('./CodeEditor'))
@@ -21,6 +25,11 @@ const examplesByMarkdownPath = new Map(examples.map(entry => [
   `/${entry.collection}/text/${entry.name}.md`,
   entry,
 ]))
+
+function compareEntries(a: Example, b: Example): number {
+  return a.title.localeCompare(b.title, undefined, { sensitivity: 'base' })
+    || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+}
 
 function message(error: unknown): string {
   if (error instanceof Error) return error.message
@@ -64,7 +73,7 @@ function MarkdownView({ entry, onSelect, onShowSource }: {
       return
     }
 
-    const source = /^\/(docs|gala)\/code\/([^/]+)\.jsx$/.exec(url.pathname)
+    const source = /^\/(elements|topics)\/code\/([^/]+)\.jsx$/.exec(url.pathname)
     if (source && source[1] === entry.collection && source[2] === entry.name) {
       event.preventDefault()
       onShowSource()
@@ -218,9 +227,9 @@ function ExampleDialog({ entry, onClose, onSelect }: {
 function SearchBar({ search, setSearch, category, setCategory }: { search: string, setSearch: (search: string) => void, category: string, setCategory: (category: string) => void }) {
   return (
     <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_13rem]">
-      <label className="sr-only" htmlFor="example-search">Search examples</label>
+      <label className="sr-only" htmlFor="example-search">Search documentation</label>
       <input className="docs-field w-full min-w-0 rounded-sm border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" id="example-search" type="search" autoComplete="off"
-        placeholder="Search examples…" value={search} onChange={event => setSearch(event.target.value)} />
+        placeholder="Search docs…" value={search} onChange={event => setSearch(event.target.value)} />
       <label className="sr-only" htmlFor="example-category">Category</label>
       <select className="docs-field w-full min-w-0 rounded-sm border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" id="example-category" value={category} onChange={event => setCategory(event.target.value)}>
         <option value="all">All categories</option>
@@ -249,19 +258,33 @@ export default function Docs({ onNavigate }: NavigationProps) {
       </header>
 
       {filtered.length ? (
-        <div className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filtered.map(entry => (
-            <button className="example-card flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-sm border border-gray-300 bg-white text-left transition-colors duration-[120ms] hover:border-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" key={entry.id} type="button" onClick={() => setSelected(entry)}
-              aria-label={`Open ${entry.title} example`} aria-haspopup="dialog">
-              <div className="flex min-h-11 items-center justify-between gap-3 border-b border-gray-200 bg-gray-50 px-3 py-2">
-                <h2 className="min-w-0 text-sm font-medium">{entry.title}</h2>
-                <span className="shrink-0 text-[10px] text-gray-500">{categoryNames.get(entry.category) ?? entry.category}</span>
-              </div>
-              <div className="flex aspect-[4/3] min-h-0 items-center justify-center p-4">
-                <Figure entry={entry} />
-              </div>
-            </button>
-          ))}
+        <div className="mt-2 space-y-8 pb-4">
+          {sections.map(([collection, title]) => {
+            const entries = filtered.filter(entry => entry.collection === collection).sort(compareEntries)
+            if (!entries.length) return null
+            return (
+              <section key={collection} aria-labelledby={`${collection}-heading`}>
+                <div className="mb-3 flex items-baseline gap-3 border-b border-gray-200 px-1 pb-2">
+                  <h2 id={`${collection}-heading`} className="text-lg font-semibold text-gray-900">{title}</h2>
+                  <span className="text-xs text-gray-500">{entries.length}</span>
+                </div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {entries.map(entry => (
+                    <button className="example-card flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-sm border border-gray-300 bg-white text-left transition-colors duration-[120ms] hover:border-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" key={entry.id} type="button" onClick={() => setSelected(entry)}
+                      aria-label={`Open ${entry.title} documentation`} aria-haspopup="dialog">
+                      <div className="flex min-h-11 items-center justify-between gap-3 border-b border-gray-200 bg-gray-50 px-3 py-2">
+                        <h3 className="min-w-0 text-sm font-medium">{entry.title}</h3>
+                        <span className="shrink-0 text-[10px] text-gray-500">{categoryNames.get(entry.category) ?? entry.category}</span>
+                      </div>
+                      <div className="flex aspect-[4/3] min-h-0 items-center justify-center p-4">
+                        <Figure entry={entry} />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )
+          })}
         </div>
       ) : (
         <p className="mt-6 border border-gray-200 p-8 text-center text-sm text-gray-600">
