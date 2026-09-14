@@ -37,7 +37,9 @@ is edited. The scripts use Vite's config runner to load the TypeScript-only
 workspace packages used by the preview generator.
 
 Run `bun --filter gum-next-docs check` from the parent workspace to validate the
-content, and `bun --filter gum-next-edit build` to build both routes. Use
+content, `bun --filter gum-next-edit check` to render every preview through Vite's
+development config runner, and `bun --filter gum-next-edit build` to build both
+routes. Both checks are included in the workspace's `bun run test`. Use
 `bun --filter gum-next-edit preview` to serve that build locally. Production
 hosting should fall back to `index.html` for `/docs` (and `/docs/`), as Vite's dev
 and preview servers do. Routes respect Vite's configured base path.

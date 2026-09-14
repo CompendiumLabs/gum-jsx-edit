@@ -10,8 +10,9 @@ const categories = [
   ['core', 'Getting started'],
   ['layout', 'Layout'],
   ['geometry', 'Geometry'],
-  ['plotting', 'Plotting'],
   ['text', 'Text'],
+  ['math', 'Math'],
+  ['plotting', 'Plotting'],
   ['api', 'API'],
   ['showcase', 'Showcases'],
 ] as const

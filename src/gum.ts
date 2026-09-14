@@ -1,13 +1,18 @@
 import {
-  Fonts,
   LayoutPass,
   Svg,
   evaluate,
   render_svg,
 } from 'gum-next-core'
+import * as math from 'gum-next-math'
 
-const fonts = new Fonts()
-const fontsReady = fonts.load()
+const fonts = math.createMathFonts()
+let fontsReady: Promise<void> | undefined
+
+function loadFonts(): Promise<void> {
+  // Share concurrent loads, but allow a later render to retry a failed fetch.
+  return fontsReady ??= fonts.load().catch(error => { fontsReady = undefined; throw error })
+}
 
 type RenderOptions = {
   idPrefix?: string
@@ -18,9 +23,9 @@ export async function renderGum(source: string, {
   idPrefix = 'gum-edit',
   name = 'editor.jsx',
 }: RenderOptions = {}): Promise<string> {
-  await fontsReady
+  await loadFonts()
 
-  let element = evaluate(source, { name })
+  let element = evaluate(source, { name, scope: math })
   if (!(element instanceof Svg)) element = new Svg({ children: element })
 
   const pass = new LayoutPass({

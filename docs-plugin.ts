@@ -1,8 +1,10 @@
 import { join, relative } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import type { Plugin, ViteDevServer } from 'vite'
-// Relative source imports let Vite's config runner load these TypeScript-only workspace packages
-// for its Node config host. None of these filesystem/layout imports reach the browser.
-import { evaluate, LayoutPass, render_svg } from '../gum-next-core/src/index'
+// Run Vite's config host under Bun so the workspace's TypeScript packages and
+// font assets share one module identity. Filesystem imports stay in this host.
+import { evaluate, Fonts, LayoutPass, render_svg } from 'gum-next-core'
+import * as math from 'gum-next-math'
 import {
   elementsDir,
   topicsDir,
@@ -46,7 +48,7 @@ export function docsPlugin(): Plugin {
     resolveId(id) {
       if (id === moduleId) return resolvedId
     },
-    load(id) {
+    async load(id) {
       if (id !== resolvedId) return
       const entries = [
         ...listElements().map(entry => ({ ...entry, category: entry.cat,
@@ -54,7 +56,17 @@ export function docsPlugin(): Plugin {
         ...listTopics().map(entry => ({ ...entry, category: entry.cat ?? 'showcase',
           collection: 'topics' as const, dir: topicsDir })),
       ]
-      const pass = new LayoutPass()
+      // Vite's config runner imports font assets as browser URLs (/@fs/...).
+      // These previews render in the server process, so resolve the assets back
+      // to filesystem paths before handing them to the font loader.
+      const fonts = new Fonts()
+      const faces = await Promise.all(math.MATH_FONTS.map(async name => {
+        const asset = await this.resolve(math.MATH_FONT_PATHS[name])
+        if (!asset) throw new Error(`Cannot resolve docs font ${name}`)
+        return { name, url: pathToFileURL(asset.id) }
+      }))
+      for (const { name, url } of faces) fonts.register_url(name, url)
+      const pass = new LayoutPass({ fonts: { value: fonts, version: fonts.version } })
       const nextPreviews = new Map<string, string>()
       const examples = entries.map(entry => {
         const { name, title, category, collection, dir } = entry
@@ -67,7 +79,7 @@ export function docsPlugin(): Plugin {
         try {
           // Only trusted, checked-in examples are evaluated. SVG glyph paths make
           // the previews self-contained; the docs page needs no runtime font loading.
-          const fragment = pass.layout(evaluate(code, { name: file }))
+          const fragment = pass.layout(evaluate(code, { name: file, scope: math }))
           const svg = render_svg(fragment, { title, id_prefix: `docs-${collection}-${name}` })
           let image: string
           if (build) {
