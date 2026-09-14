@@ -1,6 +1,7 @@
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { MouseEvent as ReactMouseEvent } from 'react'
 import { marked } from 'marked'
+import { createPortal } from 'react-dom'
 import examples from 'virtual:gum-docs'
 import type { Example } from './docs-types'
 import { Pane } from './Utils'
@@ -60,6 +61,15 @@ function message(error: unknown): string {
   return String(error)
 }
 
+function codeSyntax(language: string): 'javascript' | 'typescript' | 'shell' | 'plain' {
+  switch (language.toLowerCase()) {
+    case 'js': case 'jsx': case 'javascript': return 'javascript'
+    case 'ts': case 'tsx': case 'typescript': return 'typescript'
+    case 'sh': case 'shell': case 'bash': return 'shell'
+    default: return 'plain'
+  }
+}
+
 function Figure({ entry }: { entry: Example }) {
   const [failed, setFailed] = useState(false)
   if (!entry.image || failed) {
@@ -79,19 +89,38 @@ function MarkdownView({ entry, onSelect, onShowSource }: {
   onSelect: (entry: Example) => void
   onShowSource: () => void
 }) {
-  const html = useMemo(() => marked.parse(entry.markdown, {
-    async: false,
-    walkTokens(token) {
-      if (token.type !== 'link' || token.href.startsWith('#')) return
-      const url = new URL(token.href, `https://gum.local/${entry.collection}/text/${entry.name}.md`)
-      const target = url.origin === 'https://gum.local' ? examplesByMarkdownPath.get(url.pathname) : undefined
-      if (target) {
-        const href = new URL(entryHref(target))
-        href.hash = url.hash
-        token.href = href.href
-      }
-    },
-  }), [entry])
+  const articleRef = useRef<HTMLElement>(null)
+  const [codeHosts, setCodeHosts] = useState<HTMLElement[]>([])
+  const { html, codeBlocks } = useMemo(() => {
+    const blocks: { code: string, language: string }[] = []
+    const renderer = new marked.Renderer()
+    renderer.code = ({ text, lang }) => {
+      const index = blocks.push({ code: text, language: lang ?? '' }) - 1
+      return `<div class="markdown-code-block" data-code-block="${index}"></div>`
+    }
+
+    return {
+      html: marked.parse(entry.markdown, {
+        async: false,
+        renderer,
+        walkTokens(token) {
+          if (token.type !== 'link' || token.href.startsWith('#')) return
+          const url = new URL(token.href, `https://gum.local/${entry.collection}/text/${entry.name}.md`)
+          const target = url.origin === 'https://gum.local' ? examplesByMarkdownPath.get(url.pathname) : undefined
+          if (target) {
+            const href = new URL(entryHref(target))
+            href.hash = url.hash
+            token.href = href.href
+          }
+        },
+      }),
+      codeBlocks: blocks,
+    }
+  }, [entry])
+
+  useLayoutEffect(() => {
+    setCodeHosts(Array.from(articleRef.current?.querySelectorAll<HTMLElement>('[data-code-block]') ?? []))
+  }, [html])
 
   function followLink(event: ReactMouseEvent<HTMLElement>) {
     if (!isPlainClick(event)) return
@@ -121,8 +150,20 @@ function MarkdownView({ entry, onSelect, onShowSource }: {
 
   return (
     <div className="min-h-0 flex-1 overflow-auto scrollbar-none p-5">
-      <article className="markdown-doc mx-auto max-w-3xl" onClick={followLink}
+      <article ref={articleRef} className="markdown-doc mx-auto max-w-3xl" onClick={followLink}
         dangerouslySetInnerHTML={{ __html: html }} />
+      {codeHosts.map((host, index) => {
+        const block = codeBlocks[Number(host.dataset.codeBlock)]
+        if (!block) return null
+        return createPortal(
+          <Suspense fallback={<pre><code>{block.code}</code></pre>}>
+            <CodeEditor value={block.code} readOnly fill={false} syntax={codeSyntax(block.language)}
+              label={`${entry.title} ${block.language || 'plain text'} code example`} />
+          </Suspense>,
+          host,
+          `${entry.id}-${index}`,
+        )
+      })}
     </div>
   )
 }

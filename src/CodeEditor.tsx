@@ -1,9 +1,20 @@
 import CodeMirror from '@uiw/react-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
-import { EditorView } from '@codemirror/view'
+import { StreamLanguage } from '@codemirror/language'
+import { shell } from '@codemirror/legacy-modes/mode/shell'
+import { EditorView, scrollPastEnd } from '@codemirror/view'
 import { useMemo } from 'react'
 
 const language = javascript({ jsx: true })
+const typescript = javascript({ jsx: true, typescript: true })
+const shellLanguage = StreamLanguage.define(shell)
+const syntaxExtensions = {
+  javascript: language,
+  typescript,
+  shell: shellLanguage,
+  plain: [],
+}
+const overscroll = scrollPastEnd()
 const theme = EditorView.theme({
   '&': {
     height: '100%',
@@ -40,14 +51,17 @@ type CodeEditorProps = {
   readOnly?: boolean
   wrap?: boolean
   label?: string
+  fill?: boolean
+  syntax?: keyof typeof syntaxExtensions
 }
 
-export default function CodeEditor({ value, onChange, readOnly = false, wrap = false, label = 'Gum JSX source' }: CodeEditorProps) {
+export default function CodeEditor({ value, onChange, readOnly = false, wrap = false, label = 'Gum JSX source', fill = true, syntax = 'javascript' }: CodeEditorProps) {
   const extensions = useMemo(() => [
-    language,
+    syntaxExtensions[syntax],
+    ...(fill ? [overscroll] : []),
     EditorView.contentAttributes.of({ 'aria-label': label }),
     ...(wrap ? [EditorView.lineWrapping] : []),
-  ], [label, wrap])
+  ], [fill, label, syntax, wrap])
   const basicSetup = useMemo(() => ({
     bracketMatching: true,
     closeBrackets: !readOnly,
@@ -61,9 +75,11 @@ export default function CodeEditor({ value, onChange, readOnly = false, wrap = f
 
   return (
     <CodeMirror
-      className="h-full [&_.cm-editor]:h-full [&_.cm-scroller]:h-full [&_.cm-scroller]:overflow-auto [&_.cm-scroller]:scrollbar-none"
+      className={fill
+        ? 'h-full [&_.cm-editor]:h-full [&_.cm-scroller]:h-full [&_.cm-scroller]:overflow-auto [&_.cm-scroller]:scrollbar-none'
+        : '[&_.cm-scroller]:overflow-auto [&_.cm-scroller]:scrollbar-none'}
       value={value}
-      height="100%"
+      height={fill ? '100%' : 'auto'}
       theme={theme}
       extensions={extensions}
       onChange={onChange}

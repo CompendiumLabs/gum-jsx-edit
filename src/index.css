@@ -161,6 +161,13 @@ body,
   padding: 0.875rem 1rem;
 }
 
+.markdown-code-block {
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.25rem;
+  margin: 0 0 1em;
+}
+
 .markdown-doc pre code {
   background: transparent;
   padding: 0;
