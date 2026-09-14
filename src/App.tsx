@@ -8,7 +8,7 @@ const STORAGE_KEY = 'gum-edit:source'
 
 const starter = `<Svg width={px(640)} font_size={px(18)} color={slate}>
   <Box width={1} padding={px(24)} border_width={px(2)}
-    border_color={blue} background={white} radius={px(16)}>
+    border_color={blue} radius={px(16)}>
     <VStack width={1} gap={px(18)}>
       <Text font_size={px(30)} font_weight={bold}>Make something.</Text>
       <Text line_height={em(1.45)} color={slate}>
