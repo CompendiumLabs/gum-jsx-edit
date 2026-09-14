@@ -85,16 +85,7 @@ function App({ onNavigate }: NavigationProps) {
 
   return (
     <main className="flex h-dvh flex-col bg-white p-2 text-gray-800">
-      <header className="flex min-h-14 shrink-0 flex-wrap items-center justify-between gap-2 px-4">
-        <h1 className="font-mono text-sm">gum / edit</h1>
-        <div className="flex items-center gap-1.5">
-          <ToolbarButton onClick={copySvg} disabled={!svg}>{copied ? 'Copied' : 'Copy SVG'}</ToolbarButton>
-          <ToolbarButton onClick={downloadSvg} disabled={!svg}>Download</ToolbarButton>
-          <ToolbarButton href={`${import.meta.env.BASE_URL}docs`} onClick={event => onNavigate(event, 'docs')}>Docs</ToolbarButton>
-        </div>
-      </header>
-
-      <div className="grid min-h-0 flex-1 grid-rows-2 gap-2 lg:grid-cols-2 lg:grid-rows-1 mt-2">
+      <div className="grid min-h-0 flex-1 grid-rows-2 gap-2 lg:grid-cols-2 lg:grid-rows-1">
         <Pane ariaLabel="JSX editor" leftTitle="editor.jsx" rightTitle="auto-run">
           <CodeEditor value={source} onChange={setSource} wrap={true} />
         </Pane>

@@ -16,9 +16,64 @@ body,
   margin: 0;
 }
 
+.smallcaps {
+  font-variant-caps: all-small-caps;
+  font-synthesis-small-caps: auto;
+}
+
+.ibm-plex-sans {
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.ibm-plex-mono {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.docs-layout {
+  grid-template-columns: 240px minmax(320px, 0.95fr) minmax(0, 1fr);
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .docs-layout {
+    grid-template-columns: 180px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1.2fr);
+  }
+
+  .docs-sidebar {
+    grid-row: 1 / -1;
+  }
+
+  .docs-example {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 639px) {
+  .docs-page {
+    height: auto;
+    min-height: 100dvh;
+  }
+
+  .docs-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .docs-sidebar {
+    height: 16rem;
+  }
+
+  .docs-markdown {
+    height: 65dvh;
+  }
+
+  .docs-example {
+    height: 85dvh;
+  }
+}
+
 .markdown-doc {
   color: #374151;
-  font-size: 0.875rem;
+  font-size: 1.05rem;
   line-height: 1.65;
 }
 

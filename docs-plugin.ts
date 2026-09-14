@@ -78,8 +78,8 @@ export function docsPlugin(): Plugin {
             nextPreviews.set(url, svg)
             image = JSON.stringify(url)
           }
-          // Keep large glyph paths out of the JavaScript bundle. Cards load image
-          // assets lazily, and the popup reuses the same URL at a larger size.
+          // Keep large glyph paths out of the JavaScript bundle. The docs preview
+          // loads the selected example as a separate image asset.
           return `{...${JSON.stringify(example)},image:${image},error:null}`
         } catch (error) {
           return JSON.stringify({ ...example, image: null,

@@ -61,7 +61,7 @@ export default function CodeEditor({ value, onChange, readOnly = false, wrap = f
 
   return (
     <CodeMirror
-      className="h-full [&_.cm-editor]:h-full [&_.cm-scroller]:h-full [&_.cm-scroller]:overflow-auto"
+      className="h-full [&_.cm-editor]:h-full [&_.cm-scroller]:h-full [&_.cm-scroller]:overflow-auto [&_.cm-scroller]:scrollbar-none"
       value={value}
       height="100%"
       theme={theme}
