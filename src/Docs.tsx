@@ -195,11 +195,11 @@ export default function Docs() {
       <div className="docs-layout grid min-h-0 flex-1 gap-2">
         <aside className="docs-sidebar grid min-h-0 min-w-0" aria-label="Documentation browser">
           <Pane>
-            <div className="shrink-0 border-b border-gray-300 p-2">
-              <div className="flex gap-1" aria-label="Documentation collections">
+            <div className="shrink-0 border-b border-gray-300">
+              <div className="flex" aria-label="Documentation collections">
                 {sections.map(([value, title]) => (
                   <button key={value} type="button" aria-pressed={collection === value} onClick={() => setCollection(value)}
-                    className={`min-w-0 flex-1 cursor-pointer rounded-sm p-2 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-blue-600 ${collection === value ? 'bg-gray-800 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
+                    className={`min-w-0 flex-1 cursor-pointer first:rounded-tl-sm last:rounded-tr-sm p-2 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-blue-600 ${collection === value ? 'bg-gray-200' : 'hover:bg-gray-100'}`}>
                     {title}
                   </button>
                 ))}
