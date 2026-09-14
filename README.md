@@ -20,6 +20,11 @@ rendered locally after a short debounce. On narrow screens the two panes stack.
 Close with the button, Escape, or the backdrop; focus returns to the card.
 Browsing examples never replaces the saved editor source.
 
+Selecting a doc updates the URL (for example, `/docs?doc=elements%2FBox`).
+Reloading or opening a shared URL restores that doc and its collection; browser
+Back and Forward follow the navigation history. Collection tabs also persist in
+the URL, and an unknown doc falls back to the initial Svg example.
+
 The Vite plugin uses the docs package's catalog loaders and renders the trusted
 examples to SVG during development/build. Previews contain their own glyph paths
 and are displayed as isolated images, so the docs route needs no browser layout

@@ -23,6 +23,32 @@ const examplesByMarkdownPath = new Map(examples.map(entry => [
   `/${entry.collection}/text/${entry.name}.md`,
   entry,
 ]))
+const examplesById = new Map(examples.map(entry => [entry.id, entry]))
+const defaultEntry = examples.find(entry => entry.collection === 'elements' && entry.name === 'Svg') ?? examples[0]
+
+function readLocation(): { selected: Example | undefined, collection: Example['collection'] } {
+  const params = new URLSearchParams(window.location.search)
+  const selected = examplesById.get(params.get('doc') ?? '') ?? defaultEntry
+  const collection = params.get('collection')
+  return {
+    selected,
+    collection: collection === 'elements' || collection === 'topics'
+      ? collection : selected?.collection ?? 'elements',
+  }
+}
+
+function entryHref(entry: Example): string {
+  const url = new URL(window.location.href)
+  url.searchParams.set('doc', entry.id)
+  url.searchParams.delete('collection')
+  url.hash = ''
+  return url.href
+}
+
+function isPlainClick(event: ReactMouseEvent<HTMLElement>): boolean {
+  return !event.defaultPrevented && event.button === 0 && !event.metaKey && !event.ctrlKey
+    && !event.shiftKey && !event.altKey
+}
 
 function compareEntries(a: Example, b: Example): number {
   return a.title.localeCompare(b.title, undefined, { sensitivity: 'base' })
@@ -53,23 +79,38 @@ function MarkdownView({ entry, onSelect, onShowSource }: {
   onSelect: (entry: Example) => void
   onShowSource: () => void
 }) {
-  const html = useMemo(() => marked.parse(entry.markdown, { async: false }), [entry.markdown])
+  const html = useMemo(() => marked.parse(entry.markdown, {
+    async: false,
+    walkTokens(token) {
+      if (token.type !== 'link' || token.href.startsWith('#')) return
+      const url = new URL(token.href, `https://gum.local/${entry.collection}/text/${entry.name}.md`)
+      const target = url.origin === 'https://gum.local' ? examplesByMarkdownPath.get(url.pathname) : undefined
+      if (target) {
+        const href = new URL(entryHref(target))
+        href.hash = url.hash
+        token.href = href.href
+      }
+    },
+  }), [entry])
 
   function followLink(event: ReactMouseEvent<HTMLElement>) {
-    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey
-      || event.shiftKey || event.altKey) return
+    if (!isPlainClick(event)) return
     const link = (event.target as Element).closest('a')
+    if (link?.target === '_blank') return
     const href = link?.getAttribute('href')
     if (!href || href.startsWith('#')) return
 
-    const url = new URL(href, `https://gum.local/${entry.collection}/text/${entry.name}.md`)
-    if (url.origin !== 'https://gum.local') return
-    const target = examplesByMarkdownPath.get(url.pathname)
+    const destination = new URL(href, window.location.href)
+    const target = destination.origin === window.location.origin && destination.pathname === window.location.pathname
+      ? examplesById.get(destination.searchParams.get('doc') ?? '') : undefined
     if (target) {
       event.preventDefault()
       onSelect(target)
       return
     }
+
+    const url = new URL(href, `https://gum.local/${entry.collection}/text/${entry.name}.md`)
+    if (url.origin !== 'https://gum.local') return
 
     const source = /^\/(elements|topics)\/code\/([^/]+)\.jsx$/.exec(url.pathname)
     if (source && source[1] === entry.collection && source[2] === entry.name) {
@@ -181,13 +222,27 @@ function ExampleWorkspace({ entry, onSelect }: {
 }
 
 export default function Docs() {
-  const [collection, setCollection] = useState<Example['collection']>('elements')
-  const [selected, setSelected] = useState<Example | undefined>(() =>
-    examples.find(entry => entry.collection === 'elements' && entry.name === 'Svg') ?? examples[0])
+  const [{ collection, selected }, setLocation] = useState(readLocation)
+
+  useEffect(() => {
+    const onPopState = () => setLocation(readLocation())
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
+
+  function navigate(href: string) {
+    if (href !== window.location.href) window.history.pushState(null, '', href)
+    setLocation(readLocation())
+  }
 
   function selectEntry(entry: Example) {
-    setSelected(entry)
-    setCollection(entry.collection)
+    navigate(entryHref(entry))
+  }
+
+  function selectCollection(collection: Example['collection']) {
+    const url = new URL(window.location.href)
+    url.searchParams.set('collection', collection)
+    navigate(url.href)
   }
 
   return (
@@ -198,7 +253,7 @@ export default function Docs() {
             <div className="shrink-0 border-b border-gray-300">
               <div className="flex" aria-label="Documentation collections">
                 {sections.map(([value, title]) => (
-                  <button key={value} type="button" aria-pressed={collection === value} onClick={() => setCollection(value)}
+                  <button key={value} type="button" aria-pressed={collection === value} onClick={() => selectCollection(value)}
                     className={`min-w-0 flex-1 cursor-pointer first:rounded-tl-sm last:rounded-tr-sm p-2 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-blue-600 ${collection === value ? 'bg-gray-200' : 'hover:bg-gray-100'}`}>
                     {title}
                   </button>
@@ -214,10 +269,14 @@ export default function Docs() {
                     <h2 id={`docs-${category}`} className="mb-2 ml-1 smallcaps text-gray-600">{title}</h2>
                     <div className="flex flex-wrap gap-1.5">
                       {entries.map(entry => (
-                        <button key={entry.id} type="button" onClick={() => selectEntry(entry)} aria-current={selected?.id === entry.id ? 'page' : undefined}
+                        <a key={entry.id} href={entryHref(entry)} onClick={event => {
+                          if (!isPlainClick(event)) return
+                          event.preventDefault()
+                          selectEntry(entry)
+                        }} aria-current={selected?.id === entry.id ? 'page' : undefined}
                           className={`max-w-full cursor-pointer rounded-sm border px-1.5 py-1 text-left text-[14px] leading-tight break-words transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${selected?.id === entry.id ? 'border-blue-400 bg-blue-50 text-blue-700' : 'border-gray-300 bg-gray-50 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600'}`}>
                           {entry.title}
-                        </button>
+                        </a>
                       ))}
                     </div>
                   </section>
