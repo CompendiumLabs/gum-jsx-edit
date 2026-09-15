@@ -3,8 +3,8 @@ import { pathToFileURL } from 'node:url'
 import type { Plugin, ViteDevServer } from 'vite'
 // Run Vite's config host under Bun so the workspace's TypeScript packages and
 // font assets share one module identity. Filesystem imports stay in this host.
-import { evaluate, Fonts, LayoutPass, render_svg } from 'gum-next-core'
-import * as math from 'gum-next-math'
+import { evaluate, Fonts, LayoutPass, render_svg } from 'gum-jsx-core'
+import * as math from 'gum-jsx-math'
 import {
   elementsDir,
   topicsDir,
@@ -14,7 +14,7 @@ import {
   getElementText,
   getTopicCode,
   getTopicText,
-} from '../gum-next-docs/src/index'
+} from '../gum-jsx-docs/src/index'
 import type { Example } from './src/docs-types'
 
 const moduleId = 'virtual:gum-docs'

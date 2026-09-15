@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { fileURLToPath } from 'node:url'
 import { createServer } from 'vite'
-import { listElements, listTopics } from '../../gum-next-docs/src'
+import { listElements, listTopics } from '../../gum-jsx-docs/src'
 import type { Example } from '../src/docs-types'
 
 const expectedIds = [

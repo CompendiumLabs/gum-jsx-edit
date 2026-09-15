@@ -3,8 +3,8 @@ import {
   Svg,
   evaluate,
   render_svg,
-} from 'gum-next-core'
-import * as math from 'gum-next-math'
+} from 'gum-jsx-core'
+import * as math from 'gum-jsx-math'
 
 const fonts = math.createMathFonts()
 let fontsReady: Promise<void> | undefined
