@@ -11,6 +11,12 @@ bun run dev
 
 The source is saved in browser local storage. A valid render can be copied or downloaded as an SVG file.
 
+Rendering defaults to a light theme. Set `<Svg theme="dark">` to render with the
+dark palette; explicit colors remain fixed, while paints such as `theme:accent`
+follow the selection. The starter includes `theme="light"` so it can be changed
+directly. Exports are transparent unless source props explicitly paint a background. See
+[Themes](../gum-next-docs/topics/text/Themes.md) for palette colors and inheritance.
+
 ## Docs showcase
 
 The editor's Docs link opens `/docs`: a searchable, category-filtered grid of the

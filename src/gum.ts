@@ -17,23 +17,27 @@ function loadFonts(): Promise<void> {
 type RenderOptions = {
   idPrefix?: string
   name?: string
+  background?: string
 }
 
 export async function renderGum(source: string, {
   idPrefix = 'gum-edit',
   name = 'editor.jsx',
+  background,
 }: RenderOptions = {}): Promise<string> {
   await loadFonts()
 
-  let element = evaluate(source, { name, scope: math })
-  if (!(element instanceof Svg)) element = new Svg({ children: element })
+  const element = evaluate(source, { name, scope: math })
+  const viewport = element instanceof Svg ? element : new Svg({ children: element })
+  const root = new Svg(viewport.type, { ...viewport.props, theme: viewport.props.theme ?? 'light' })
 
   const pass = new LayoutPass({
     fonts: { value: fonts, version: fonts.version },
   })
-  const fragment = pass.layout(element)
+  const fragment = pass.layout(root)
 
   return render_svg(fragment, {
     id_prefix: idPrefix,
+    background,
   })
 }
