@@ -13,6 +13,7 @@ const categories = [
   ['text', 'Text'],
   ['math', 'Math'],
   ['plotting', 'Plotting'],
+  ['networks', 'Networks'],
   ['api', 'API'],
   ['showcase', 'Showcases'],
 ] as const
