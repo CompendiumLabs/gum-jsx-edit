@@ -1,0 +1,6 @@
+import { javascriptLanguage, scopeCompletionSource } from '@codemirror/lang-javascript'
+import * as math from 'gum-next-math'
+
+// Match the evaluator's math scope without maintaining a second list of names.
+export const mathCompletionSource = scopeCompletionSource(math)
+export const mathCompletions = javascriptLanguage.data.of({ autocomplete: mathCompletionSource })

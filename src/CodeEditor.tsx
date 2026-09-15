@@ -4,6 +4,7 @@ import { StreamLanguage } from '@codemirror/language'
 import { shell } from '@codemirror/legacy-modes/mode/shell'
 import { EditorView, scrollPastEnd } from '@codemirror/view'
 import { useMemo } from 'react'
+import { mathCompletions } from './completions'
 
 const language = javascript({ jsx: true })
 const typescript = javascript({ jsx: true, typescript: true })
@@ -58,10 +59,11 @@ type CodeEditorProps = {
 export default function CodeEditor({ value, onChange, readOnly = false, wrap = false, label = 'Gum JSX source', fill = true, syntax = 'javascript' }: CodeEditorProps) {
   const extensions = useMemo(() => [
     syntaxExtensions[syntax],
+    ...(!readOnly && (syntax === 'javascript' || syntax === 'typescript') ? [mathCompletions] : []),
     ...(fill ? [overscroll] : []),
     EditorView.contentAttributes.of({ 'aria-label': label }),
     ...(wrap ? [EditorView.lineWrapping] : []),
-  ], [fill, label, syntax, wrap])
+  ], [fill, label, readOnly, syntax, wrap])
   const basicSetup = useMemo(() => ({
     bracketMatching: true,
     closeBrackets: !readOnly,
