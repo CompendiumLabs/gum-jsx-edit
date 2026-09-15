@@ -1,6 +1,6 @@
 # gum-edit
 
-A small two-pane live editor for the in-development `gum-next-core` package. JSX is evaluated locally in the browser and rendered directly to SVG.
+A small two-pane live editor for the in-development `gum-jsx-core` package. JSX is evaluated locally in the browser and rendered directly to SVG.
 
 From the parent workspace:
 
@@ -15,12 +15,12 @@ Rendering defaults to a light theme. Set `<Svg theme="dark">` to render with the
 dark palette; explicit colors remain fixed, while paints such as `theme:accent`
 follow the selection. The starter includes `theme="light"` so it can be changed
 directly. Exports are transparent unless source props explicitly paint a background. See
-[Themes](../gum-next-docs/topics/text/Themes.md) for palette colors and inheritance.
+[Themes](../gum-jsx-docs/topics/text/Themes.md) for palette colors and inheritance.
 
 ## Docs showcase
 
 The editor's Docs link opens `/docs`: a searchable, category-filtered grid of the
-reference examples and showcases from `gum-next-docs`. Each card opens a modal
+reference examples and showcases from `gum-jsx-docs`. Each card opens a modal
 with editable, wrapping, highlighted JSX beside its live figure. Edits are
 rendered locally after a short debounce. On narrow screens the two panes stack.
 Close with the button, Escape, or the backdrop; focus returns to the card.
@@ -42,10 +42,10 @@ when a popup is opened. The browser rendering engine is loaded only if an exampl
 is edited. The scripts use Vite's config runner to load the TypeScript-only
 workspace packages used by the preview generator.
 
-Run `bun --filter gum-next-docs check` from the parent workspace to validate the
-content, `bun --filter gum-next-edit check` to render every preview through Vite's
-development config runner, and `bun --filter gum-next-edit build` to build both
+Run `bun --filter gum-jsx-docs check` from the parent workspace to validate the
+content, `bun --filter gum-jsx-edit check` to render every preview through Vite's
+development config runner, and `bun --filter gum-jsx-edit build` to build both
 routes. Both checks are included in the workspace's `bun run test`. Use
-`bun --filter gum-next-edit preview` to serve that build locally. Production
+`bun --filter gum-jsx-edit preview` to serve that build locally. Production
 hosting should fall back to `index.html` for `/docs` (and `/docs/`), as Vite's dev
 and preview servers do. Routes respect Vite's configured base path.
