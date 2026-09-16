@@ -7,7 +7,7 @@ import { evaluate, Fonts, LayoutPass, render_svg } from 'gum-jsx-core'
 import * as math from 'gum-jsx-math'
 import {
   elementsDir,
-  topicsDir,
+  galleryDir,
   listElements,
   listTopics,
   getElementCode,
@@ -19,7 +19,7 @@ import type { Example } from './src/docs-types'
 
 const moduleId = 'virtual:gum-docs'
 const resolvedId = '\0' + moduleId
-const directories = [elementsDir, topicsDir]
+const directories = [elementsDir, galleryDir]
 
 function isContent(file: string): boolean {
   return directories.some(dir => {
@@ -54,7 +54,7 @@ export function docsPlugin(): Plugin {
         ...listElements().map(entry => ({ ...entry, category: entry.cat,
           collection: 'elements' as const, dir: elementsDir })),
         ...listTopics().map(entry => ({ ...entry, category: entry.cat ?? 'showcase',
-          collection: 'topics' as const, dir: topicsDir })),
+          collection: 'gallery' as const, dir: galleryDir })),
       ]
       // Vite's config runner imports font assets as browser URLs (/@fs/...).
       // These previews render in the server process, so resolve the assets back
@@ -73,8 +73,8 @@ export function docsPlugin(): Plugin {
         const file = join(dir, 'code', name + '.jsx')
         this.addWatchFile(file)
         this.addWatchFile(join(dir, 'text', name + '.md'))
-        const code = collection === 'topics' ? getTopicCode(name) : getElementCode(name)
-        const markdown = collection === 'topics' ? getTopicText(name) : getElementText(name)
+        const code = collection === 'gallery' ? getTopicCode(name) : getElementCode(name)
+        const markdown = collection === 'gallery' ? getTopicText(name) : getElementText(name)
         const example = { id: collection + '/' + name, name, title, category, collection, markdown, code }
         try {
           // Only trusted, checked-in examples are evaluated. SVG glyph paths make

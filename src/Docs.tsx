@@ -16,14 +16,15 @@ const categories = [
   ['networks', 'Networks'],
   ['api', 'API'],
   ['showcase', 'Showcases'],
+  ['special', 'Special'],
 ] as const
 const sections = [
   ['elements', 'Elements'],
-  ['topics', 'Topics'],
+  ['gallery', 'Gallery'],
 ] as const
 const CodeEditor = lazy(() => import('./CodeEditor'))
 const examplesByMarkdownPath = new Map(examples.map(entry => [
-  `/${entry.collection}/text/${entry.name}.md`,
+  `/docs/${entry.collection}/text/${entry.name}.md`,
   entry,
 ]))
 const examplesById = new Map(examples.map(entry => [entry.id, entry]))
@@ -31,11 +32,11 @@ const defaultEntry = examples.find(entry => entry.collection === 'elements' && e
 
 function readLocation(): { selected: Example | undefined, collection: Example['collection'] } {
   const params = new URLSearchParams(window.location.search)
-  const selected = examplesById.get(params.get('doc') ?? '') ?? defaultEntry
-  const collection = params.get('collection')
+  const selected = examplesById.get((params.get('doc') ?? '').replace(/^topics\//, 'gallery/')) ?? defaultEntry
+  const collection = params.get('collection') === 'topics' ? 'gallery' : params.get('collection')
   return {
     selected,
-    collection: collection === 'elements' || collection === 'topics'
+    collection: collection === 'elements' || collection === 'gallery'
       ? collection : selected?.collection ?? 'elements',
   }
 }
@@ -107,7 +108,7 @@ function MarkdownView({ entry, onSelect, onShowSource }: {
         renderer,
         walkTokens(token) {
           if (token.type !== 'link' || token.href.startsWith('#')) return
-          const url = new URL(token.href, `https://gum.local/${entry.collection}/text/${entry.name}.md`)
+          const url = new URL(token.href, `https://gum.local/docs/${entry.collection}/text/${entry.name}.md`)
           const target = url.origin === 'https://gum.local' ? examplesByMarkdownPath.get(url.pathname) : undefined
           if (target) {
             const href = new URL(entryHref(target))
@@ -140,10 +141,10 @@ function MarkdownView({ entry, onSelect, onShowSource }: {
       return
     }
 
-    const url = new URL(href, `https://gum.local/${entry.collection}/text/${entry.name}.md`)
+    const url = new URL(href, `https://gum.local/docs/${entry.collection}/text/${entry.name}.md`)
     if (url.origin !== 'https://gum.local') return
 
-    const source = /^\/(elements|topics)\/code\/([^/]+)\.jsx$/.exec(url.pathname)
+    const source = /^\/docs\/(elements|gallery)\/code\/([^/]+)\.jsx$/.exec(url.pathname)
     if (source && source[1] === entry.collection && source[2] === entry.name) {
       event.preventDefault()
       onShowSource()
@@ -303,7 +304,7 @@ export default function Docs() {
                 ))}
               </div>
             </div>
-            <nav className="min-h-0 flex-1 overflow-y-auto scrollbar-none" aria-label={collection === 'elements' ? 'Elements' : 'Topics'}>
+            <nav className="min-h-0 flex-1 overflow-y-auto scrollbar-none" aria-label={collection === 'elements' ? 'Elements' : 'Gallery'}>
               {categories.map(([category, title]) => {
                 const entries = examples.filter(entry => entry.collection === collection && entry.category === category).sort(compareEntries)
                 if (!entries.length) return null

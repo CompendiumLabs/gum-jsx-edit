@@ -6,7 +6,7 @@ import type { Example } from '../src/docs-types'
 
 const expectedIds = [
   ...listElements().map(entry => `elements/${entry.name}`),
-  ...listTopics().map(entry => `topics/${entry.name}`),
+  ...listTopics().map(entry => `gallery/${entry.name}`),
 ].sort()
 
 // Load the actual Vite configuration: importing docsPlugin directly under Bun
