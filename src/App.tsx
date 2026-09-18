@@ -33,6 +33,7 @@ function message(error: unknown): string {
 function App({ onNavigate }: NavigationProps) {
   const [source, setSource] = useState(() => localStorage.getItem(STORAGE_KEY) ?? starter)
   const [svg, setSvg] = useState('')
+  const [value, setValue] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(true)
   const [copied, setCopied] = useState(false)
@@ -45,9 +46,10 @@ function App({ onNavigate }: NavigationProps) {
 
     const timer = window.setTimeout(async () => {
       try {
-        const nextSvg = await renderGum(source)
+        const result = await renderGum(source)
         if (id !== renderId.current) return
-        setSvg(nextSvg)
+        setSvg(result.kind === 'svg' ? result.svg : '')
+        setValue(result.kind === 'value' ? result.text : '')
         setError('')
       } catch (nextError) {
         if (id !== renderId.current) return
@@ -98,6 +100,8 @@ function App({ onNavigate }: NavigationProps) {
                   className="preview-svg w-full max-w-3xl [&>svg]:block [&>svg]:h-auto [&>svg]:max-h-[calc(100vh-9rem)] [&>svg]:w-full"
                   dangerouslySetInnerHTML={{ __html: svg }}
                 />
+              ) : value ? (
+                <pre className="w-full max-w-3xl whitespace-pre-wrap break-words font-mono text-sm leading-relaxed text-gray-800">{value}</pre>
               ) : !error ? (
                 <span className="text-sm text-gray-500">Loading fonts…</span>
               ) : null}

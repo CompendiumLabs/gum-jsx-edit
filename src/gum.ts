@@ -1,9 +1,4 @@
-import {
-  LayoutPass,
-  Svg,
-  evaluate,
-  render_svg,
-} from 'gum-jsx-core'
+import { evaluate, render_element } from 'gum-jsx-core'
 import * as math from 'gum-jsx-math'
 
 const fonts = math.createMathFonts()
@@ -20,24 +15,29 @@ type RenderOptions = {
   background?: string
 }
 
+// Sources that return a plain value show it as text: strings verbatim, the rest as JSON.
+export type RenderResult =
+  | { kind: 'svg'; svg: string }
+  | { kind: 'value'; text: string }
+
+function formatValue(value: unknown): string {
+  return typeof value === 'string' ? value : JSON.stringify(value, null, 2) ?? String(value)
+}
+
 export async function renderGum(source: string, {
   idPrefix = 'gum-edit',
   name = 'editor.jsx',
   background,
-}: RenderOptions = {}): Promise<string> {
+}: RenderOptions = {}): Promise<RenderResult> {
   await loadFonts()
 
-  const element = evaluate(source, { name, scope: math })
-  const viewport = element instanceof Svg ? element : new Svg({ children: element })
-  const root = new Svg(viewport.type, { ...viewport.props, theme: viewport.props.theme ?? 'light' })
-
-  const pass = new LayoutPass({
-    fonts: { value: fonts, version: fonts.version },
-  })
-  const fragment = pass.layout(root)
-
-  return render_svg(fragment, {
+  const value = evaluate(source, { name, scope: math })
+  const result = render_element(value, {
+    defaults: { theme: 'light' },
     id_prefix: idPrefix,
     background,
+    fonts,
   })
+  if (result.kind === 'value') return { kind: 'value', text: formatValue(result.value) }
+  return { kind: 'svg', svg: result.svg }
 }

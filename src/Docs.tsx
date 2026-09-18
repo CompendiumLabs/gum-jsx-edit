@@ -178,12 +178,14 @@ function ExampleWorkspace({ entry, onSelect }: {
   const sourceRef = useRef<HTMLDivElement>(null)
   const [source, setSource] = useState(entry.code)
   const [svg, setSvg] = useState('')
+  const [value, setValue] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
     if (source === entry.code) {
       setSvg('')
+      setValue('')
       setError('')
       setBusy(false)
       return
@@ -195,12 +197,13 @@ function ExampleWorkspace({ entry, onSelect }: {
     const timer = window.setTimeout(async () => {
       try {
         const { renderGum } = await import('./gum')
-        const nextSvg = await renderGum(source, {
+        const result = await renderGum(source, {
           idPrefix: `gum-docs-${entry.id.replace(/[^a-zA-Z0-9_-]/g, '-')}`,
           name: `${entry.name}.jsx`,
         })
         if (cancelled) return
-        setSvg(nextSvg)
+        setSvg(result.kind === 'svg' ? result.svg : '')
+        setValue(result.kind === 'value' ? result.text : '')
       } catch (nextError) {
         if (cancelled) return
         setError(message(nextError))
@@ -249,6 +252,8 @@ function ExampleWorkspace({ entry, onSelect }: {
             {svg ? (
               <div className="preview-svg flex h-full w-full items-center justify-center [&>svg]:block [&>svg]:h-full [&>svg]:w-full"
                 dangerouslySetInnerHTML={{ __html: svg }} />
+            ) : value ? (
+              <pre className="w-full whitespace-pre-wrap break-words font-mono text-sm leading-relaxed text-gray-800">{value}</pre>
             ) : (
               <Figure entry={entry} />
             )}
