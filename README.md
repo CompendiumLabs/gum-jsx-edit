@@ -17,6 +17,20 @@ follow the selection. The starter includes `theme="light"` so it can be changed
 directly. Exports are transparent unless source props explicitly paint a background. See
 [Themes](../gum-jsx-docs/docs/gallery/text/Themes.md) for palette colors and inheritance.
 
+## Emoji
+
+Emoji work in plain text, such as `<Text>Ship it 🚀</Text>`. Core measures them
+with its bundled metrics face and keeps them as live SVG text in the family
+`Noto Color Emoji`, so the editor only has to paint that family. The `@font-face`
+rule in `src/index.css` does so with the complete web font from
+`@fontsource/noto-color-emoji`. That file is several megabytes, and the browser
+fetches it only once a rendered figure contains an emoji. Keep the family out of
+the UI font stacks so ordinary page text never triggers the download.
+
+A copied or downloaded SVG names the same family. A viewer without it installed
+falls back to its own emoji font, and each emoji stays centered in its measured slot.
+Docs previews are isolated images, so they always use the viewer's emoji font.
+
 ## Docs showcase
 
 The editor's Docs link opens `/docs`: a searchable, category-filtered grid of the
