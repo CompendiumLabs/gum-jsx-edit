@@ -1,4 +1,4 @@
-import { evaluate, render_element } from 'gum-jsx-core'
+import { available, evaluate, make_request, render_element } from 'gum-jsx-core'
 import * as math from 'gum-jsx-math'
 
 const fonts = math.createMathFonts()
@@ -33,6 +33,7 @@ export async function renderGum(source: string, {
 
   const value = evaluate(source, { name, scope: math })
   const result = render_element(value, {
+    request: make_request({ width: available(640), height: available(480) }),
     defaults: { theme: 'light' },
     id_prefix: idPrefix,
     background,

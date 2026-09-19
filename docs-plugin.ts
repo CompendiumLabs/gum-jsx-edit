@@ -3,7 +3,7 @@ import { pathToFileURL } from 'node:url'
 import type { Plugin, ViteDevServer } from 'vite'
 // Run Vite's config host under Bun so the workspace's TypeScript packages and
 // font assets share one module identity. Filesystem imports stay in this host.
-import { evaluate, Fonts, LayoutPass, render_svg } from 'gum-jsx-core'
+import { available, evaluate, Fonts, LayoutPass, layout_element, make_request, render_svg } from 'gum-jsx-core'
 import * as math from 'gum-jsx-math'
 import {
   elementsDir,
@@ -79,7 +79,12 @@ export function docsPlugin(): Plugin {
         try {
           // Only trusted, checked-in examples are evaluated. SVG glyph paths make
           // the previews self-contained; the docs page needs no runtime font loading.
-          const fragment = pass.layout(evaluate(code, { name: file, scope: math }))
+          const result = layout_element(evaluate(code, { name: file, scope: math }), {
+            pass,
+            request: make_request({ width: available(640), height: available(480) }),
+          })
+          if (result.kind !== 'fragment') throw new TypeError('Examples must return an element')
+          const { fragment } = result
           const svg = render_svg(fragment, { title, id_prefix: `docs-${collection}-${name}` })
           let image: string
           if (build) {

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { THEMES } from 'gum-jsx-core'
 import { renderGum } from '../src/gum'
 
 async function svg(...args: Parameters<typeof renderGum>): Promise<string> {
@@ -9,7 +10,7 @@ async function svg(...args: Parameters<typeof renderGum>): Promise<string> {
 
 const light = await svg('<Text>Default</Text>')
 assert.doesNotMatch(light, /<rect\b[^>]*fill=/)
-assert.match(light, /<path\b[^>]*fill="black"/)
+assert.match(light, new RegExp(`<path\\b[^>]*fill="${THEMES.light.foreground}"`))
 
 const dark = await svg(`
   <Svg theme="dark" width={px(240)}>
@@ -22,17 +23,17 @@ const dark = await svg(`
 `)
 assert.match(dark, /<svg\b[^>]*width="240"/)
 assert.doesNotMatch(dark, /<rect\b[^>]*fill=/)
-for (const fill of ['white', 'tomato', 'black']) {
+for (const fill of [THEMES.dark.foreground, 'tomato', THEMES.light.foreground]) {
   assert.match(dark, new RegExp(`<path\\b[^>]*fill="${fill}"`))
 }
 assert.ok(!dark.includes('theme:'))
 
 const transparent = await svg('<Svg theme="dark" background="none"><Text>Clear</Text></Svg>')
 assert.doesNotMatch(transparent, /<rect\b[^>]*fill=/)
-assert.match(transparent, /<path\b[^>]*fill="white"/)
+assert.match(transparent, new RegExp(`<path\\b[^>]*fill="${THEMES.dark.foreground}"`))
 const painted = await svg('<Svg theme="dark"><Text>Backdrop</Text></Svg>', { background: 'navy' })
 assert.match(painted, /<rect\b[^>]*fill="navy"/)
-assert.match(painted, /<path\b[^>]*fill="white"/)
+assert.match(painted, new RegExp(`<path\\b[^>]*fill="${THEMES.dark.foreground}"`))
 
 // Host defaults preserve custom Svg layout descriptors and their extra props.
 const custom = await svg(`
