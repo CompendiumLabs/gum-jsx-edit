@@ -8,17 +8,17 @@ const STORAGE_KEY = 'gum-edit:source'
 
 const starter = `<Svg theme="light" width={px(640)} font_size={px(18)} color="theme:text">
   <Box width={1} padding={px(24)} border_width={px(2)}
-    border_color="theme:accent" radius={px(16)}>
+    border_color="theme:accent" border_radius={px(16)}>
     <VStack width={1} gap={px(18)}>
       <Text font_size={px(30)} font_weight={bold}>Make something.</Text>
       <Text line_height={em(1.45)}>
         Edit this gum JSX and the SVG updates as you type.
       </Text>
       <HStack width={1} gap={px(14)} align="stretch">
-        <RoundedRect grow={1} height={px(110)} radius={px(14)}
+        <RoundedRect grow={1} height={px(110)} border_radius={px(14)}
           fill="theme:accent" stroke={none} />
         <Circle width={px(110)} fill={red} stroke={none} />
-        <RoundedRect grow={1} height={px(110)} radius={px(14)}
+        <RoundedRect grow={1} height={px(110)} border_radius={px(14)}
           fill={green} stroke={none} />
       </HStack>
     </VStack>
