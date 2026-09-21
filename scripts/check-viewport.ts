@@ -10,6 +10,8 @@ async function equivalent(source: string, expected: string, options: Options = {
 }
 
 // Studio's logical canvas provides reference pixels without allocating output space.
+await equivalent('<Text font-size="4vh">Root font</Text>', '<Text font-size={vh(4)}>Root font</Text>')
+await equivalent('<Rect width="25vw" height="10vh" />', '<Rect width={vw(25)} height={vh(10)} />')
 await equivalent('<Text font-size={vh(4)}>Root font</Text>', '<Text font-size={px(19.2)}>Root font</Text>')
 await equivalent('<Rect width={vw(25)} height={vh(10)} />', '<Rect width={px(160)} height={px(48)} />')
 await equivalent(`
