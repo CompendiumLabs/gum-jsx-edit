@@ -56,10 +56,11 @@ when a popup is opened. The browser rendering engine is loaded only if an exampl
 is edited. The scripts use Vite's config runner to load the TypeScript-only
 workspace packages used by the preview generator.
 
-Run `bun --filter gum-jsx-docs check` from the parent workspace to validate the
-content, `bun --filter gum-jsx-edit check` to render every preview through Vite's
-development config runner, and `bun --filter gum-jsx-edit build` to build both
-routes. Both checks are included in the workspace's `bun run test`. Use
-`bun --filter gum-jsx-edit preview` to serve that build locally. Production
+Run `bun --filter @gum-jsx/docs test` from the parent workspace to validate the
+content, `bun --filter @gum-jsx/edit test` to test editor behavior and render every
+preview through Vite's development config runner, and `bun --filter @gum-jsx/edit build`
+to build both routes. Tests live in `test/`; run `bun run test` from this package
+to execute them. Both suites are included in the workspace's `bun run test`. Use
+`bun --filter @gum-jsx/edit preview` to serve that build locally. Production
 hosting should fall back to `index.html` for `/docs` (and `/docs/`), as Vite's dev
 and preview servers do. Routes respect Vite's configured base path.
