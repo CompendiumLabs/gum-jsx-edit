@@ -20,6 +20,7 @@ import type { Example } from './src/docs-types'
 const moduleId = 'virtual:gum-docs'
 const resolvedId = '\0' + moduleId
 const directories = [elementsDir, galleryDir]
+const canvas = { width: 640, height: 480 }
 
 function isContent(file: string): boolean {
   return directories.some(dir => {
@@ -81,7 +82,8 @@ export function docsPlugin(): Plugin {
           // the previews self-contained; the docs page needs no runtime font loading.
           const result = layout_element(evaluate(code, { name: file, scope: math }), {
             pass,
-            request: make_request({ width: available(640), height: available(480) }),
+            viewport: canvas,
+            request: make_request({ width: available(canvas.width), height: available(canvas.height) }),
           })
           if (result.kind !== 'fragment') throw new TypeError('Examples must return an element')
           const { fragment } = result
