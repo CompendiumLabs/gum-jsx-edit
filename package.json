@@ -6,7 +6,7 @@
     "dev": "bun --bun vite --configLoader runner",
     "build": "tsc --noEmit && bun --bun vite build --configLoader runner",
     "preview": "bun --bun vite preview --configLoader runner",
-    "test": "bun test/completions.ts && bun test/emoji.ts && bun test/themes.ts && bun test/viewport.ts && bun test/docs.ts",
+    "test": "bun test/completions.ts && bun test/emoji.ts && bun test/themes.ts && bun test/sizing.ts && bun test/docs.ts",
     "typecheck": "tsc --noEmit --pretty false"
   },
   "dependencies": {

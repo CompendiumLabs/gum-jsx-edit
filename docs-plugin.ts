@@ -82,7 +82,6 @@ export function docsPlugin(): Plugin {
           // the previews self-contained; the docs page needs no runtime font loading.
           const result = layout_element(evaluate(code, { name: file, scope: math }), {
             pass,
-            viewport: canvas,
             request: make_request({ width: available(canvas.width), height: available(canvas.height) }),
           })
           if (result.kind !== 'fragment') throw new TypeError('Examples must return an element')

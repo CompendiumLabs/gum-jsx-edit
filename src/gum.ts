@@ -38,7 +38,6 @@ export async function renderGum(source: string, {
   const value = evaluate(source, { name, scope: math })
   const result = render_element(value, {
     request: make_request({ width: available(canvas.width), height: available(canvas.height) }),
-    viewport: canvas,
     defaults: { theme: 'light' },
     id_prefix: idPrefix,
     background,
