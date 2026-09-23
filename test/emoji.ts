@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { EMOJI_FAMILY } from 'gum-jsx-core'
+import { EMOJI_FAMILY } from '@gum-jsx/core'
 import { renderGum } from '../src/gum'
 
 // Plain text needs no Span: Plex keeps its outlines, and each emoji sequence

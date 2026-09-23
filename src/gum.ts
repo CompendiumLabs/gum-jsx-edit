@@ -1,6 +1,6 @@
-import { available, evaluate, make_request, render_element } from 'gum-jsx-core'
-import type { Size } from 'gum-jsx-core'
-import * as math from 'gum-jsx-math'
+import { available, evaluate, make_request, render_element } from '@gum-jsx/core'
+import type { Size } from '@gum-jsx/core'
+import * as math from '@gum-jsx/math'
 
 const DEFAULT_CANVAS: Size = Object.freeze({ width: 640, height: 480 })
 const fonts = math.createMathFonts()

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { THEMES } from 'gum-jsx-core'
+import { THEMES } from '@gum-jsx/core'
 import { renderGum } from '../src/gum'
 
 async function svg(...args: Parameters<typeof renderGum>): Promise<string> {

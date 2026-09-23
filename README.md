@@ -1,6 +1,13 @@
-# gum-edit
+# @gum-jsx/edit
 
-A small two-pane live editor for the in-development `gum-jsx-core` package. JSX is evaluated locally in the browser and rendered directly to SVG.
+A browser editor for Gum figures, with live SVG previews, saved source, and
+searchable documentation examples. JSX is evaluated locally with the core and
+math bindings. The app uses React, CodeMirror, and Vite.
+
+See the [Gum project](https://github.com/CompendiumLabs/gum-jsx#readme) for
+workspace setup and the package overview.
+
+## Run locally
 
 From the parent workspace:
 
@@ -9,13 +16,15 @@ bun install
 bun run dev
 ```
 
+Open the URL printed by Vite.
+
 The source is saved in browser local storage. A valid render can be copied or downloaded as an SVG file.
 
 Rendering defaults to a light theme. Set `<Svg theme="dark">` to render with the
 dark palette; explicit colors remain fixed, while paints such as `theme:accent`
 follow the selection. The starter includes `theme="light"` so it can be changed
 directly. Exports are transparent unless source props explicitly paint a background. See
-[Themes](../gum-jsx-docs/docs/gallery/text/Themes.md) for palette colors and inheritance.
+[Themes](https://github.com/CompendiumLabs/gum-jsx-docs/blob/master/docs/gallery/text/Themes.md) for palette colors and inheritance.
 
 ## Emoji
 
@@ -55,6 +64,8 @@ SVGs are separate, lazily loaded assets in production, and the code editor loads
 when a popup is opened. The browser rendering engine is loaded only if an example
 is edited. The scripts use Vite's config runner to load the TypeScript-only
 workspace packages used by the preview generator.
+
+## Development and production builds
 
 Run `bun --filter @gum-jsx/docs test` from the parent workspace to validate the
 content, `bun --filter @gum-jsx/edit test` to test editor behavior and render every
