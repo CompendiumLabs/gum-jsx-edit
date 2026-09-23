@@ -5,14 +5,13 @@ searchable documentation examples. JSX is evaluated locally with the core and
 math bindings. The app uses React, CodeMirror, and Vite.
 
 See the [Gum project](https://github.com/CompendiumLabs/gum-jsx#readme) for
-workspace setup and the package overview.
+getting started and the package overview.
 
 ## Run locally
 
 From the parent workspace:
 
 ```sh
-bun install
 bun run dev
 ```
 
