@@ -23,7 +23,7 @@ Rendering defaults to a light theme. Set `<Svg theme="dark">` to render with the
 dark palette; explicit colors remain fixed, while paints such as `theme:accent`
 follow the selection. The starter includes `theme="light"` so it can be changed
 directly. Exports are transparent unless source props explicitly paint a background. See
-[Themes](https://github.com/CompendiumLabs/gum-jsx-docs/blob/master/docs/gallery/text/Themes.md) for palette colors and inheritance.
+[Themes](https://github.com/CompendiumLabs/gum-jsx-docs/blob/master/docs/guides/text/themes.md) for palette colors and inheritance.
 
 ## Emoji
 

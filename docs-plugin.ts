@@ -7,19 +7,23 @@ import { available, evaluate, Fonts, LayoutPass, layout_element, make_request, r
 import * as math from '@gum-jsx/math'
 import {
   elementsDir,
+  guidesDir,
   galleryDir,
   listElements,
-  listTopics,
+  listGuides,
+  listGallery,
   getElementCode,
   getElementText,
-  getTopicCode,
-  getTopicText,
+  getGuideCode,
+  getGuideText,
+  getGalleryCode,
+  getGalleryText,
 } from '../gum-jsx-docs/src/index'
 import type { Example } from './src/docs-types'
 
 const moduleId = 'virtual:gum-docs'
 const resolvedId = '\0' + moduleId
-const directories = [elementsDir, galleryDir]
+const directories = [elementsDir, guidesDir, galleryDir]
 const canvas = { width: 640, height: 480 }
 
 function isContent(file: string): boolean {
@@ -54,7 +58,9 @@ export function docsPlugin(): Plugin {
       const entries = [
         ...listElements().map(entry => ({ ...entry, category: entry.cat,
           collection: 'elements' as const, dir: elementsDir })),
-        ...listTopics().map(entry => ({ ...entry, category: entry.cat ?? 'showcase',
+        ...listGuides().map(entry => ({ ...entry, category: entry.cat ?? 'core',
+          collection: 'guides' as const, dir: guidesDir })),
+        ...listGallery().map(entry => ({ ...entry, category: entry.cat ?? 'showcase',
           collection: 'gallery' as const, dir: galleryDir })),
       ]
       // Vite's config runner imports font assets as browser URLs (/@fs/...).
@@ -74,8 +80,10 @@ export function docsPlugin(): Plugin {
         const file = join(dir, 'code', name + '.jsx')
         this.addWatchFile(file)
         this.addWatchFile(join(dir, 'text', name + '.md'))
-        const code = collection === 'gallery' ? getTopicCode(name) : getElementCode(name)
-        const markdown = collection === 'gallery' ? getTopicText(name) : getElementText(name)
+        const code = collection === 'elements' ? getElementCode(name)
+          : collection === 'guides' ? getGuideCode(name) : getGalleryCode(name)
+        const markdown = collection === 'elements' ? getElementText(name)
+          : collection === 'guides' ? getGuideText(name) : getGalleryText(name)
         const example = { id: collection + '/' + name, name, title, category, collection, markdown, code }
         try {
           // Only trusted, checked-in examples are evaluated. SVG glyph paths make

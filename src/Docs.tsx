@@ -19,6 +19,7 @@ const categories = [
   ['special', 'Special'],
 ] as const
 const sections = [
+  ['guides', 'Guides'],
   ['elements', 'Elements'],
   ['gallery', 'Gallery'],
 ] as const
@@ -36,7 +37,7 @@ function readLocation(): { selected: Example | undefined, collection: Example['c
   const collection = params.get('collection') === 'topics' ? 'gallery' : params.get('collection')
   return {
     selected,
-    collection: collection === 'elements' || collection === 'gallery'
+    collection: collection === 'guides' || collection === 'elements' || collection === 'gallery'
       ? collection : selected?.collection ?? 'elements',
   }
 }
@@ -144,7 +145,7 @@ function MarkdownView({ entry, onSelect, onShowSource }: {
     const url = new URL(href, `https://gum.local/docs/${entry.collection}/text/${entry.name}.md`)
     if (url.origin !== 'https://gum.local') return
 
-    const source = /^\/docs\/(elements|gallery)\/code\/([^/]+)\.jsx$/.exec(url.pathname)
+    const source = /^\/docs\/(guides|elements|gallery)\/code\/([^/]+)\.jsx$/.exec(url.pathname)
     if (source && source[1] === entry.collection && source[2] === entry.name) {
       event.preventDefault()
       onShowSource()
@@ -309,7 +310,7 @@ export default function Docs() {
                 ))}
               </div>
             </div>
-            <nav className="min-h-0 flex-1 overflow-y-auto scrollbar-none" aria-label={collection === 'elements' ? 'Elements' : 'Gallery'}>
+            <nav className="min-h-0 flex-1 overflow-y-auto scrollbar-none" aria-label={collection === 'elements' ? 'Elements' : collection === 'guides' ? 'Guides' : 'Gallery'}>
               {categories.map(([category, title]) => {
                 const entries = examples.filter(entry => entry.collection === collection && entry.category === category).sort(compareEntries)
                 if (!entries.length) return null

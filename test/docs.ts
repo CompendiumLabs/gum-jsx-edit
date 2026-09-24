@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict'
 import { fileURLToPath } from 'node:url'
 import { createServer } from 'vite'
-import { listElements, listTopics } from '../../gum-jsx-docs/src'
+import { listElements, listGuides, listGallery } from '../../gum-jsx-docs/src'
 import type { Example } from '../src/docs-types'
 
 const expectedIds = [
   ...listElements().map(entry => `elements/${entry.name}`),
-  ...listTopics().map(entry => `gallery/${entry.name}`),
+  ...listGuides().map(entry => `guides/${entry.name}`),
+  ...listGallery().map(entry => `gallery/${entry.name}`),
 ].sort()
 
 // Load the actual Vite configuration: importing docsPlugin directly under Bun
