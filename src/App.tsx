@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import CodeEditor from './CodeEditor'
-import { Pane, ToolbarButton } from './Utils'
-import { renderGum } from './gum'
-import type { NavigationProps } from './navigation'
+import { Pane } from './Utils'
 
 const STORAGE_KEY = 'gum-edit:source'
 
@@ -30,13 +28,12 @@ function message(error: unknown): string {
   return String(error)
 }
 
-function App({ onNavigate }: NavigationProps) {
+function App() {
   const [source, setSource] = useState(() => localStorage.getItem(STORAGE_KEY) ?? starter)
   const [svg, setSvg] = useState('')
   const [value, setValue] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(true)
-  const [copied, setCopied] = useState(false)
   const renderId = useRef(0)
 
   useEffect(() => {
@@ -46,6 +43,7 @@ function App({ onNavigate }: NavigationProps) {
 
     const timer = window.setTimeout(async () => {
       try {
+        const { renderGum } = await import('./gum')
         const result = await renderGum(source)
         if (id !== renderId.current) return
         setSvg(result.kind === 'svg' ? result.svg : '')
@@ -62,23 +60,6 @@ function App({ onNavigate }: NavigationProps) {
     return () => window.clearTimeout(timer)
   }, [source])
 
-  async function copySvg() {
-    if (!svg) return
-    await navigator.clipboard.writeText(svg)
-    setCopied(true)
-    window.setTimeout(() => setCopied(false), 1200)
-  }
-
-  function downloadSvg() {
-    if (!svg) return
-    const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }))
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'gum.svg'
-    link.click()
-    URL.revokeObjectURL(url)
-  }
-
   const rightTitle = <><span className="flex items-center gap-2">
     <span className={`size-1.5 rounded-full ${error ? 'bg-red-600' : busy ? 'animate-pulse bg-amber-600' : 'bg-green-600'}`} />
       {error ? 'Error' : busy ? 'Rendering' : 'Live'}
@@ -89,7 +70,7 @@ function App({ onNavigate }: NavigationProps) {
     <main className="flex h-dvh flex-col bg-white p-2 text-gray-800">
       <div className="grid min-h-0 flex-1 grid-rows-2 gap-2 lg:grid-cols-2 lg:grid-rows-1">
         <Pane ariaLabel="JSX editor" leftTitle="editor.jsx" rightTitle="auto-run">
-          <CodeEditor value={source} onChange={setSource} wrap={true} />
+          <CodeEditor value={source} onChange={setSource} />
         </Pane>
 
         <Pane ariaLabel="SVG preview" leftTitle="preview.svg" rightTitle={rightTitle}>

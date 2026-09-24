@@ -1,21 +1,25 @@
 import CodeMirror from '@uiw/react-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
-import { StreamLanguage } from '@codemirror/language'
-import { shell } from '@codemirror/legacy-modes/mode/shell'
 import { EditorView, scrollPastEnd } from '@codemirror/view'
-import { useMemo } from 'react'
 import { mathCompletions } from './completions'
 
-const language = javascript({ jsx: true })
-const typescript = javascript({ jsx: true, typescript: true })
-const shellLanguage = StreamLanguage.define(shell)
-const syntaxExtensions = {
-  javascript: language,
-  typescript,
-  shell: shellLanguage,
-  plain: [],
+const extensions = [
+  javascript({ jsx: true }),
+  mathCompletions,
+  scrollPastEnd(),
+  EditorView.contentAttributes.of({ 'aria-label': 'Gum JSX source' }),
+  EditorView.lineWrapping,
+]
+const basicSetup = {
+  bracketMatching: true,
+  closeBrackets: true,
+  foldGutter: false,
+  highlightActiveLine: true,
+  highlightActiveLineGutter: true,
+  highlightSelectionMatches: true,
+  indentOnInput: true,
+  lineNumbers: true,
 }
-const overscroll = scrollPastEnd()
 const theme = EditorView.theme({
   '&': {
     height: '100%',
@@ -48,44 +52,18 @@ const theme = EditorView.theme({
 
 type CodeEditorProps = {
   value: string
-  onChange?: (value: string) => void
-  readOnly?: boolean
-  wrap?: boolean
-  label?: string
-  fill?: boolean
-  syntax?: keyof typeof syntaxExtensions
+  onChange: (value: string) => void
 }
 
-export default function CodeEditor({ value, onChange, readOnly = false, wrap = false, label = 'Gum JSX source', fill = true, syntax = 'javascript' }: CodeEditorProps) {
-  const extensions = useMemo(() => [
-    syntaxExtensions[syntax],
-    ...(!readOnly && (syntax === 'javascript' || syntax === 'typescript') ? [mathCompletions] : []),
-    ...(fill ? [overscroll] : []),
-    EditorView.contentAttributes.of({ 'aria-label': label }),
-    ...(wrap ? [EditorView.lineWrapping] : []),
-  ], [fill, label, readOnly, syntax, wrap])
-  const basicSetup = useMemo(() => ({
-    bracketMatching: true,
-    closeBrackets: !readOnly,
-    foldGutter: false,
-    highlightActiveLine: !readOnly,
-    highlightActiveLineGutter: !readOnly,
-    highlightSelectionMatches: true,
-    indentOnInput: !readOnly,
-    lineNumbers: true,
-  }), [readOnly])
-
+export default function CodeEditor({ value, onChange }: CodeEditorProps) {
   return (
     <CodeMirror
-      className={fill
-        ? 'h-full [&_.cm-editor]:h-full [&_.cm-scroller]:h-full [&_.cm-scroller]:overflow-auto [&_.cm-scroller]:scrollbar-none'
-        : '[&_.cm-scroller]:overflow-auto [&_.cm-scroller]:scrollbar-none'}
+      className="h-full [&_.cm-editor]:h-full [&_.cm-scroller]:h-full [&_.cm-scroller]:overflow-auto [&_.cm-scroller]:scrollbar-none"
       value={value}
-      height={fill ? '100%' : 'auto'}
+      height="100%"
       theme={theme}
       extensions={extensions}
       onChange={onChange}
-      readOnly={readOnly}
       basicSetup={basicSetup}
     />
   )
