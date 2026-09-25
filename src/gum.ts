@@ -1,8 +1,9 @@
-import { available, evaluate, make_request, render_element } from '@gum-jsx/core'
+import { available, Evaluator, make_request, render_element } from '@gum-jsx/core'
 import type { Size } from '@gum-jsx/core'
 import * as math from '@gum-jsx/math'
 
 const DEFAULT_CANVAS: Size = Object.freeze({ width: 640, height: 480 })
+const evaluator = new Evaluator({ scope: math })
 const fonts = math.createMathFonts()
 let fontsReady: Promise<void> | undefined
 
@@ -35,7 +36,7 @@ export async function renderGum(source: string, {
 }: RenderOptions = {}): Promise<RenderResult> {
   await loadFonts()
 
-  const value = evaluate(source, { name, scope: math })
+  const value = evaluator.evaluate(source, { name })
   const result = render_element(value, {
     request: make_request({ width: available(canvas.width), height: available(canvas.height) }),
     defaults: { theme: 'light' },
