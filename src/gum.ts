@@ -1,9 +1,10 @@
 import { available, Evaluator, make_request, render_element } from '@gum-jsx/core'
 import type { Size } from '@gum-jsx/core'
 import * as math from '@gum-jsx/math'
+import * as maps from '@gum-jsx/maps'
 
 const DEFAULT_CANVAS: Size = Object.freeze({ width: 640, height: 480 })
-const evaluator = new Evaluator({ scope: math })
+const evaluator = new Evaluator({ scope: { ...math, ...maps } })
 const fonts = math.createMathFonts()
 let fontsReady: Promise<void> | undefined
 
