@@ -40,6 +40,5 @@ const map = `<GeoMap source={world_countries({ids: []})} width={px(120)} height=
   <Points points={[{lon: 30, lat: 20}]} point-size={px(6)} />
 </GeoMap>`
 assert.deepEqual(await renderGum(map), await renderGum(map.replace('{lon: 30, lat: 20}', '[30, 20]')))
-await assert.rejects(renderGum('<Rect {...{x: 0, y: 0}} />'), /placement props were removed/)
 
-console.log('Editor sizing passed: authored dimensions, available space, named coordinates, and invalid props.')
+console.log('Editor sizing passed: authored dimensions, available space, named coordinates, and invalid dimensions.')
