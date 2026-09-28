@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import CodeEditor from './CodeEditor'
 import { Pane } from './Utils'
+import { renderGum } from './gum'
 
 const STORAGE_KEY = 'gum-edit:source'
 
@@ -41,10 +42,12 @@ function App() {
     const id = ++renderId.current
     setBusy(true)
 
-    const timer = window.setTimeout(async () => {
+    const update = async () => {
       try {
-        const { renderGum } = await import('./gum')
+        const t0 = Date.now()
         const result = await renderGum(source)
+        const t1 = Date.now()
+        console.log(`render time: ${t1-t0}`)
         if (id !== renderId.current) return
         setSvg(result.kind === 'svg' ? result.svg : '')
         setValue(result.kind === 'value' ? result.text : '')
@@ -55,9 +58,8 @@ function App() {
       } finally {
         if (id === renderId.current) setBusy(false)
       }
-    }, 180)
-
-    return () => window.clearTimeout(timer)
+    }
+    update()
   }, [source])
 
   const rightTitle = <><span className="flex items-center gap-2">
