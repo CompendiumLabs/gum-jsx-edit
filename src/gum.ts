@@ -1,7 +1,8 @@
 import { available, Evaluator, make_request, render_element } from '@gum-jsx/core'
-import type { Size } from '@gum-jsx/core'
+import type { Size, TextRenderMode } from '@gum-jsx/core'
 import * as math from '@gum-jsx/math'
 import * as maps from '@gum-jsx/maps'
+import { loadTextFonts } from './fonts'
 
 const DEFAULT_CANVAS: Size = Object.freeze({ width: 640, height: 480 })
 const evaluator = new Evaluator({ scope: { ...math, ...maps } })
@@ -18,6 +19,7 @@ type RenderOptions = {
   name?: string
   background?: string
   canvas?: Size
+  textMode?: TextRenderMode
 }
 
 // Sources that return a plain value show it as text: strings verbatim, the rest as JSON.
@@ -34,6 +36,7 @@ export async function renderGum(source: string, {
   name = 'editor.jsx',
   background,
   canvas = DEFAULT_CANVAS,
+  textMode = 'live',
 }: RenderOptions = {}): Promise<RenderResult> {
   await loadFonts()
 
@@ -44,7 +47,9 @@ export async function renderGum(source: string, {
     id_prefix: idPrefix,
     background,
     fonts,
+    text_mode: textMode,
   })
   if (result.kind === 'value') return { kind: 'value', text: formatValue(result.value) }
+  await loadTextFonts(fonts, result.fragment)
   return { kind: 'svg', svg: result.svg }
 }

@@ -25,6 +25,11 @@ directly. See
 [Themes](https://github.com/CompendiumLabs/gum-jsx-docs/blob/master/docs/guides/text/themes.md)
 for palette colors and inheritance.
 
+The preview uses live SVG text by default, with matching font faces loaded into
+the browser. Gum still determines wrapping, baselines, and placement; math keeps
+its outlines. The renderer helper accepts `renderGum(source, { textMode: 'path' })`
+when outlined text is needed. Core rendering and the CLI continue to default to paths.
+
 ## Checks
 
 Run `bun --filter @gum-jsx/edit test` to test editor behavior and
