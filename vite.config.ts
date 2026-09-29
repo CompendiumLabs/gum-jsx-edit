@@ -18,6 +18,7 @@ export default defineConfig(({ command }) => ({
     ? { alias: [{ find: /^acorn$/, replacement: coreRequire.resolve('acorn') }] }
     : undefined,
   build: {
+    manifest: true,
     rolldownOptions: {
       // Keep the renderer importable without mounting the editor. The browser
       // regression exercises this entry from the same production build.
