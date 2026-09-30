@@ -7,7 +7,7 @@ const extensions = [
   javascript({ jsx: true }),
   mathCompletions,
   scrollPastEnd(),
-  EditorView.contentAttributes.of({ 'aria-label': 'Gum JSX source' }),
+  EditorView.contentAttributes.of({ 'aria-label': 'Gum source' }),
   EditorView.lineWrapping,
 ]
 const basicSetup = {
