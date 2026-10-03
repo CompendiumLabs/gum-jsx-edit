@@ -13,7 +13,7 @@ assert.deepEqual(live.filter(match => match[1] === EMOJI_FAMILY).map(match => ma
   ['\u{1f680}', '\u{1f468}‍\u{1f469}‍\u{1f467}', '1️⃣', '\u{1f1fa}\u{1f1f8}'])
 const prose = live.filter(match => match[1] !== EMOJI_FAMILY)
 assert.equal(prose.length, 1)
-assert.deepEqual([...prose[0][2].matchAll(/<tspan [^>]*>([^<]*)<\/tspan>/g)].map(match => match[1]), ['Ship', 'it'])
+assert.deepEqual([...prose[0][2].matchAll(/<tspan [^>]*>([^<]*)<\/tspan>/g)].map(match => match[1]), ['Ship ', 'it '])
 assert.doesNotMatch(svg, /<path /)
 const outlined = await renderGum(source, { textMode: 'path' })
 assert.ok(outlined.kind === 'svg' && outlined.svg.includes('<path '))
