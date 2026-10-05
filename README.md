@@ -1,19 +1,19 @@
 # @gum-jsx/edit
 
+[Gum](https://github.com/CompendiumLabs/gum-jsx) — installation, quickstart, and user documentation.
+
 A basic browser editor example for Gum figures. It evaluates JSX locally and
 shows a live SVG preview. The app uses React, CodeMirror, and Vite, and saves
 the source in browser local storage.
 
-See the [Gum project](https://github.com/CompendiumLabs/gum-jsx#readme) for
-getting started and the package overview. Reference documentation and examples
-live in `gum-jsx-docs`.
+Reference documentation and examples live in `gum-jsx-docs`.
 
 ## Run locally
 
 From the parent workspace:
 
 ```sh
-bun run dev
+bun --filter @gum-jsx/edit dev
 ```
 
 Open the URL printed by Vite.
