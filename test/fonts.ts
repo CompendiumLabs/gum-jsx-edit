@@ -55,7 +55,7 @@ try {
   await loadTextFonts(fonts, custom.fragment)
   assert.ok(!registered.has(failed))
   assert.equal([...registered].find(face => face.family === "Joe's Sans")!.status, 'loaded')
-  console.log('Browser font loading passed: matching faces, demand loading, concurrent reuse, replacement and retry.')
+  console.log('ok - browser font loading: matching faces, demand loading, concurrent reuse, replacement and retry')
 } finally {
   for (const [name, descriptor] of originals) {
     if (descriptor) Object.defineProperty(globalThis, name, descriptor)
@@ -77,4 +77,4 @@ const outlined = await renderGum(source, { textMode: 'path' })
 assert.ok(outlined.kind === 'svg')
 assert.match(outlined.svg, /<path /)
 assert.doesNotMatch(outlined.svg, /<text /)
-console.log('Editor text mode passed: one option controls prose and math.')
+console.log('ok - editor text mode: one option controls prose and math')

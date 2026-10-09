@@ -48,4 +48,4 @@ assert.match(custom, /<rect\b[^>]*fill="tomato"/)
 
 const value = await renderGum('const total = 2 + 3\nreturn { total }')
 assert.deepEqual(value, { kind: 'value', text: '{\n  "total": 5\n}' })
-console.log('Editor themes passed: defaults, source and paint overrides, transparency, and custom viewports.')
+console.log('ok - editor themes: defaults, source and paint overrides, transparency, and custom viewports')

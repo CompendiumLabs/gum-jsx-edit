@@ -41,4 +41,4 @@ const map = `<GeoMap source={world_countries({ids: []})} width={px(120)} height=
 </GeoMap>`
 assert.deepEqual(await renderGum(map), await renderGum(map.replace('{lon: 30, lat: 20}', '[30, 20]')))
 
-console.log('Editor sizing passed: authored dimensions, available space, named coordinates, and invalid dimensions.')
+console.log('ok - editor sizing: authored dimensions, available space, named coordinates, and invalid dimensions')

@@ -20,4 +20,4 @@ for (const doc of ['// mathToEl', '"mathToEl', 'String.raw`\\mathb', '<Latex>abc
   const result = await completion(doc)
   assert.ok(!result?.options.some(option => option.label === 'mathToElement'), `${doc}: inappropriate math completion`)
 }
-console.log('Math completions passed: JSX elements, helper functions, font aliases, and non-code contexts.')
+console.log('ok - math completions: JSX elements, helper functions, font aliases, and non-code contexts')
