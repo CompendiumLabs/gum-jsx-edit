@@ -18,7 +18,7 @@ bun --filter @gum-jsx/edit dev
 
 Open the URL printed by Vite.
 
-Rendering defaults to a light theme. Set `<Svg theme="dark">` to render with the
+Rendering defaults to a light theme. Set `<Page theme="dark">` to render with the
 dark palette; explicit colors remain fixed, while paints such as `theme:accent`
 follow the selection. The starter includes `theme="light"` so it can be changed
 directly. See

@@ -5,7 +5,7 @@ import { renderGum } from './gum'
 
 const STORAGE_KEY = 'gum-edit:source'
 
-const starter = `<Svg theme="light" width={px(640)} font_size={px(18)} color="theme:text">
+const starter = `<Page theme="light" width={px(640)} font_size={px(18)} color="theme:text">
   <Box width={1} padding={px(24)} border_width={px(2)}
     border_color="theme:accent" border_radius={px(16)}>
     <VStack width={1} gap={px(18)}>
@@ -22,7 +22,7 @@ const starter = `<Svg theme="light" width={px(640)} font_size={px(18)} color="th
       </HStack>
     </VStack>
   </Box>
-</Svg>`
+</Page>`
 
 function message(error: unknown): string {
   if (error instanceof Error) return error.message
@@ -80,7 +80,7 @@ function App() {
             <div className="m-auto flex min-h-full w-full items-center justify-center">
               {svg ? (
                 <div
-                  className="preview-svg w-full max-w-3xl [&>svg]:block [&>svg]:h-auto [&>svg]:max-h-[calc(100vh-9rem)] [&>svg]:w-full"
+                  className="preview-svg flex w-full max-w-3xl flex-col gap-6 [&>svg]:block [&>svg]:h-auto [&>svg]:max-h-[calc(100vh-9rem)] [&>svg]:w-full"
                   dangerouslySetInnerHTML={{ __html: svg }}
                 />
               ) : value ? (

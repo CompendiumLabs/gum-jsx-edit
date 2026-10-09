@@ -13,13 +13,13 @@ assert.doesNotMatch(light, /<rect\b[^>]*fill=/)
 assert.match(light, new RegExp(`<text\\b[^>]*fill="${THEMES.light.foreground}"`))
 
 const dark = await svg(`
-  <Svg theme="dark" width={px(240)}>
+  <Page theme="dark" width={px(240)}>
     <VStack>
       <Text>Inherited</Text>
       <Text color="tomato">Explicit</Text>
       <Text theme="light">Nested</Text>
     </VStack>
-  </Svg>
+  </Page>
 `)
 assert.match(dark, /<svg\b[^>]*width="240"/)
 assert.doesNotMatch(dark, /<rect\b[^>]*fill=/)
@@ -28,21 +28,21 @@ for (const fill of [THEMES.dark.foreground, 'tomato', THEMES.light.foreground]) 
 }
 assert.ok(!dark.includes('theme:'))
 
-const transparent = await svg('<Svg theme="dark" background="none"><Text>Clear</Text></Svg>')
+const transparent = await svg('<Page theme="dark" background="none"><Text>Clear</Text></Page>')
 assert.doesNotMatch(transparent, /<rect\b[^>]*fill=/)
 assert.match(transparent, new RegExp(`<text\\b[^>]*fill="${THEMES.dark.foreground}"`))
-const painted = await svg('<Svg theme="dark"><Text>Backdrop</Text></Svg>', { background: 'navy' })
+const painted = await svg('<Page theme="dark"><Text>Backdrop</Text></Page>', { background: 'navy' })
 assert.match(painted, /<rect\b[^>]*fill="navy"/)
 assert.match(painted, new RegExp(`<text\\b[^>]*fill="${THEMES.dark.foreground}"`))
 
-// Host defaults preserve custom Svg layout descriptors and their extra props.
+// Host defaults preserve custom Page layout descriptors and their extra props.
 const custom = await svg(`
-  class CustomSvg extends Svg {
+  class CustomPage extends Page {
     static layout(props, query) {
-      return Svg.layout({ ...props, background: props.surface }, query)
+      return Page.layout({ ...props, background: props.surface }, query)
     }
   }
-  return <CustomSvg surface="tomato"><Text>Custom</Text></CustomSvg>
+  return <CustomPage surface="tomato"><Text>Custom</Text></CustomPage>
 `)
 assert.match(custom, /<rect\b[^>]*fill="tomato"/)
 

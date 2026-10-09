@@ -50,6 +50,7 @@ export async function renderGum(source: string, {
     text_mode: textMode,
   })
   if (result.kind === 'value') return { kind: 'value', text: formatValue(result.value) }
-  await loadTextFonts(fonts, result.fragment)
-  return { kind: 'svg', svg: result.svg }
+  const pages = result.kind === 'document' ? result.pages : [result]
+  await Promise.all(pages.map(page => loadTextFonts(fonts, page.fragment)))
+  return { kind: 'svg', svg: pages.map(page => page.svg).join('\n') }
 }
